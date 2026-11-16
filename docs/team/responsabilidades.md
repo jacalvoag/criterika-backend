@@ -94,11 +94,22 @@ La implementación de estos puntos públicos debe dejar dependencias en una dire
 ## Ramas, revisión e integración
 
 - `develop` es la base de las tareas y el destino de sus pull requests; `main` recibe versiones estables mediante una promoción coordinada.
-- Una rama por cambio concreto, por ejemplo `feat/jose-persistencia-registro`, `feat/uzzi-verificacion-registro` o `feat/rafael-evaluacion-preguntas`. Los nombres personales no representan ramas permanentes.
+- Una rama por funcionalidad o bloque coherente, acotado y revisable; se permanece en ella durante sus varios commits y correcciones. Ejemplos: `feat/jose-persistencia-registro`, `feat/uzzi-registro` o `feat/rafael-evaluacion-preguntas`.
+- No abrir otra rama por cada commit, archivo, método, prueba o corrección de la misma PR. Cambiar solo por otro bloque, trabajo independiente en paralelo o urgencia coordinada. Una rama ya integrada no se reutiliza para un bloque nuevo; tampoco hay ramas personales permanentes con toda el área.
 - Usar commits pequeños y `git add` con rutas explícitas. Revisar el diff antes del commit.
 - Actualizar la rama con `develop` antes de terminar la revisión y resolver los conflictos en la rama de tarea. No sobrescribir el historial remoto de otros.
 - José coordina la integración. El responsable funcional revisa los cambios que afecten a su área; los cambios de José también reciben revisión de Uzzi o Rafael. La revisión de infraestructura no convierte a otro integrante en escritor simultáneo de sus archivos.
 - Las protecciones y revisiones automáticas se configuran y verifican por separado. Esta guía es un acuerdo de trabajo y no acredita reglas técnicas de GitHub. No se crea un CODEOWNERS con usuarios de GitHub supuestos.
+
+### Commits dentro del bloque
+
+Cada commit tiene un propósito concreto que pueda explicarse en una frase. Código y pruebas necesarias pueden confirmarse juntos. El tamaño se decide por coherencia y facilidad de revisión, sin una cuota de líneas, archivos o commits. No se fragmenta una implementación para dejar imports o pruebas deliberadamente rotos.
+
+Usar mensajes claros en español con el formato `tipo(alcance): descripción`, por ejemplo `feat(auth): valida la solicitud y aceptación del registro` o `fix(auth): conserva los intentos de código incorrecto`. Evitar títulos como `cambios`, `update`, `avance` o `final final`.
+
+Guardar avances lógicos y continuar en la misma rama. Un push puede compartir varios commits. Antes de confirmar, revisar `git status`, el diff y los archivos preparados mediante rutas explícitas; no mezclar trabajo ajeno ni reformateos globales. Comprobar lo afectado y ejecutar el conjunto pertinente antes de integrar.
+
+Conservar la secuencia mediante **Create a merge commit** al integrar la PR. Evitar squash masivo o reescritura de historial compartido sin acuerdo. Las pruebas y documentación de revisión se agregan a esa misma rama y PR.
 
 Cada PR indica problema, resultado, alcance, archivos compartidos, dependencias, cambios de contrato/esquema y comprobaciones realmente ejecutadas. Mientras falte una dependencia de integración, permanece en Draft.
 
