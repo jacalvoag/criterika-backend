@@ -1,0 +1,820 @@
+{
+  "documento": {
+    "titulo": "Criterika: contexto y coordinación del equipo",
+    "version": "1.0.0",
+    "fecha_local": "2026-11-15",
+    "zona_horaria": "America/Mexico_City",
+    "idioma": "es-MX",
+    "destinatarios": [
+      "José",
+      "Uzzi",
+      "Rafael"
+    ],
+    "coordinador": "José",
+    "naturaleza": "Guía compartible de trabajo; no es configuración ejecutable ni prueba de funcionalidades implementadas.",
+    "repositorio": "https://github.com/jacalvoag/criterika-backend",
+    "ubicacion_canonica": "docs/team/criterika_coordinacion_equipo.json",
+    "commit_aplicacion_observado": "fba8132629cdb95f75dfc9e9e8056ba38553894d",
+    "vigencia": "Comprobar develop y las fuentes actuales antes de cada bloque. El commit observado es una fotografía del punto de partida.",
+    "precedencia": "Respetar los acuerdos e instrucciones vigentes. Una contradicción entre contrato, arquitectura, modelo y código se informa y resuelve antes de integrar; no se cambia unilateralmente una fuente."
+  },
+  "acuerdos_principales": [
+    "Una rama por funcionalidad o bloque coherente, con varios commits pequeños y entendibles.",
+    "Permanecer en la rama durante ese bloque y sus revisiones; no crear ramas por cada commit, archivo, método, prueba o corrección.",
+    "Crear otra rama cuando comienza otro bloque, un trabajo independiente en paralelo o una urgencia coordinada. Una rama ya integrada no se reutiliza para otro bloque.",
+    "José conserva toda la base de datos, persistencia, infraestructura común y coordinación de integración.",
+    "Uzzi mantiene identidad, seguridad, privacidad, legal, medios y gestión/moderación de personas.",
+    "Rafael mantiene contenido, minijuegos, participación, progreso, economía, colección y diccionario.",
+    "Consumir dependencias reales cuando estén implementadas, probadas e integradas en develop; los dobles se utilizan solo en pruebas.",
+    "No crear alternativas paralelas de autenticación, configuración, errores o persistencia para evitar bloqueos.",
+    "Las firmas documentadas y carpetas previstas no equivalen a implementaciones disponibles.",
+    "Aplicar criterio aceptable: cumplir el alcance de forma consistente, justificable y comprobable, con complejidad proporcionada."
+  ],
+  "contexto_producto": {
+    "descripcion": "Backend de una aplicación educativa gamificada con niveles, minijuegos, vidas, gemas, progreso y cartas evolucionables.",
+    "alcance_reparto": "API NestJS, persistencia, base de datos e infraestructura común. Las vistas móvil y web requieren su reparto antes de desarrollarse.",
+    "roles_aplicacion": [
+      "JUGADOR",
+      "ADMINISTRADOR"
+    ],
+    "administradores": "Tres cuentas individuales predefinidas, provisionadas de forma controlada; los nombres del equipo no crean cuentas de aplicación.",
+    "criterio_aceptacion": "Funciona, respeta el contrato, puede sostenerse y no deja inconsistencias conocidas sin resolver. La perfección no es un objetivo.",
+    "modelos_descartados": "Los modelos antiguos de BD descartados no son fuentes vigentes; usar los nuevos modelos y las migraciones actuales."
+  },
+  "estado_observado": {
+    "preparado": [
+      "Base NestJS 12, TypeScript estricto y ESM; Oxlint, Prettier, Vitest y Supertest.",
+      "Configuración validada, pool pg, comprobación al arrancar, cierre ordenado y npm run db:check.",
+      "Contrato OpenAPI 3.1.0, versión funcional 1.0.2, con 142 operaciones, 121 rutas, 184 schemas y 30 escenarios.",
+      "Modelos conceptual/lógico y migración inicial modular de 19 SQL; 53 tablas de negocio y 88 FK.",
+      "Reparto del equipo y arquitectura documentados, con firmas de registro sin implementación."
+    ],
+    "pendiente": [
+      "Configurar RDS de Criterika y verificar región, versión disponible, red, permisos, cifrado, respaldo y TLS positivo real.",
+      "Aplicar migración y provisionar logins técnicos separados de migración, aplicación y mantenimiento.",
+      "Implementar TransactionRunner, idempotencia y protección de respuestas, repositorios y primer flujo funcional.",
+      "Implementar registro, correo, sesiones, autorización, contenido, juego, economía y derechos ARCO.",
+      "Configurar documentos legales y responsable/canal de privacidad reales antes de datos reales.",
+      "Implementar/verificar proveedores, depuración, efectos externos, restauración y escenarios del contrato."
+    ],
+    "evidencia_previa": {
+      "backend": {
+        "unitarias": 30,
+        "e2e_http_inicial": 1,
+        "casos_postgresql_efimero": 9,
+        "fuente": "docs/development/verificacion_postgresql.md",
+        "limite": "Base técnica y conexión; no endpoints funcionales."
+      },
+      "sql": {
+        "pruebas": 34,
+        "fallos": 0,
+        "errores": 0,
+        "postgresql": "18.6",
+        "fuente": "database/tests/informe_pruebas.md"
+      },
+      "arquitectura": {
+        "firmas": "Compilación TypeScript estricta comprobada en su entrega.",
+        "dependencias": "15 capacidades previstas sin ciclos.",
+        "fuente": "docs/architecture/backend.md"
+      },
+      "regla": "Son resultados históricos documentados, no pruebas recién ejecutadas ni verificaciones de RDS."
+    }
+  },
+  "stack": {
+    "backend": "NestJS 12",
+    "lenguaje": "TypeScript estricto",
+    "modulos": "ESM; imports relativos terminan en .js.",
+    "persistencia": "pg y SQL parametrizado; migraciones SQL como fuente ejecutable del esquema.",
+    "motor": "PostgreSQL 18 o superior; referencia probada 18.6.",
+    "alojamiento": "Amazon RDS, aún pendiente de configuración/verificación para Criterika.",
+    "transporte": "OpenAPI 3.1.0; prefijo /api/v1, rutas en inglés, propiedades en español, enums explícitos.",
+    "pruebas": "Vitest y Supertest; no copiar comandos Jest o --runInBand.",
+    "herramientas": "Oxlint con análisis de tipos y Prettier, conservando configuración del repositorio.",
+    "dependencias_observadas": {
+      "@nestjs/common": "^12.0.1",
+      "@nestjs/config": "^12.1.1",
+      "@nestjs/core": "^12.0.1",
+      "@nestjs/platform-express": "^12.0.1",
+      "pg": "^8.23.1",
+      "reflect-metadata": "^0.2.2",
+      "rxjs": "^7.8.1"
+    },
+    "scripts_observados": {
+      "build": "nest build",
+      "deploy": "nest deploy",
+      "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+      "start": "nest start",
+      "start:dev": "nest start --watch",
+      "start:debug": "nest start --debug --watch",
+      "start:prod": "node dist/main",
+      "lint": "oxlint --type-aware src/ test/",
+      "test": "vitest run",
+      "test:watch": "vitest",
+      "test:cov": "vitest run --coverage",
+      "test:debug": "vitest --inspect-brk --no-file-parallelism",
+      "test:e2e": "vitest run --config ./vitest.config.e2e.ts",
+      "db:check": "npm run build && node dist/check-database.js"
+    },
+    "node": "Utilizar una versión acordada compatible con NestJS y su CLI. La comprobación previa usó v24.22.1; no acredita la versión local de cada integrante.",
+    "regla": "José coordina dependencias, variables y lockfile. No agregar ORM, sincronización de tablas o migrador alternativo por iniciativa propia."
+  },
+  "lectura_inicial": [
+    "AGENTS.md",
+    "README.md",
+    "package.json",
+    "tsconfig.json",
+    "docs/openapi/criterika_openapi_v1.yaml",
+    "docs/openapi/criterika_guia_contrato_v1.md",
+    "docs/architecture/backend.md",
+    "docs/architecture/registro.md",
+    "docs/architecture/registration-contracts.ts",
+    "docs/team/responsabilidades.md",
+    "docs/team/operaciones.md",
+    "database/README.md",
+    "database/docs/responsabilidades_backend.md"
+  ],
+  "arquitectura": {
+    "estilo": "Monolito modular por funcionalidad.",
+    "responsabilidades": {
+      "controlador_dto": "HTTP, headers, estructura de entradas y representación del contrato.",
+      "servicio": "Reglas, permisos del caso y coordinación; sin SQL ni Request/Response de Express en sus reglas.",
+      "repositorio": "SQL, bloqueos y conversión de filas; privado del módulo y escrito por José.",
+      "infraestructura": "Configuración, pool, transacciones, correlación, errores, idempotencia y adaptadores técnicos."
+    },
+    "reglas": [
+      "Crear archivos/módulos cuando exista una responsabilidad real; no generar todas las carpetas previstas.",
+      "No imponer una interfaz por clase, un repositorio genérico o una clase por cada método HTTP.",
+      "Consumir servicios públicos exportados, sin importar repositorios privados de otros módulos.",
+      "Mantener dependencias en una dirección; revisar circularidades antes de usar forwardRef como salida predeterminada.",
+      "security verifica sesiones y no importa auth; auth coordina registro usando capacidades inferiores.",
+      "El registro crea el estado inicial sin importar gameplay.",
+      "Las consultas pueden unir tablas mediante repositorios de José; un servicio no escribe SQL ajeno para saltarse un límite.",
+      "src/ nunca importa desde docs/. Trasladar las firmas documentales al implementar y evitar dos fuentes divergentes."
+    ],
+    "fuentes": [
+      "docs/architecture/backend.md",
+      "docs/architecture/registro.md"
+    ]
+  },
+  "responsabilidades": {
+    "jose": {
+      "nombre": "José",
+      "area": "Base de datos, persistencia e infraestructura común",
+      "responsabilidades": [
+        "Modelos, DDL, migraciones, funciones, triggers, índices, claves, permisos y semillas.",
+        "Todos los repositorios SQL y sus pruebas, incluso dentro de módulos de Uzzi o Rafael.",
+        "RDS, conexión, pool, contexto del actor y transacciones.",
+        "Infraestructura común de errores, correlación, idempotencia, protección de datos recuperables y adaptadores técnicos.",
+        "Controles técnicos de retención, purga, eliminación, respaldos y restauración.",
+        "Composición raíz, configuración, dependencias, contrato e integración.",
+        "Capacidades de sistema y auditoría de la matriz."
+      ],
+      "archivos_exclusivos": [
+        "database/**",
+        "docs/database/**",
+        "src/database/**",
+        "src/config/**",
+        "src/modules/**/repositories/**",
+        "src/modules/system/**",
+        "src/modules/audit/**"
+      ],
+      "reserva_global": "Cualquier SQL, modelo ORM, migración, conexión o adaptador de persistencia corresponde a José, esté donde esté.",
+      "primer_bloque": "Preparar transacciones y persistencia mínima del registro, y RDS cuando se aborde ese bloque."
+    },
+    "uzzi": {
+      "nombre": "Uzzi",
+      "area": "Identidad, seguridad, privacidad y gestión de personas",
+      "responsabilidades": [
+        "Registro, verificación, login de jugador/administrador, sesiones, recuperación y confirmación reciente.",
+        "Guards, representación de identidad y autorización, con registro global coordinado por José.",
+        "Perfil y gestión de sesiones; consulta de personas y accesos auditados a datos personales.",
+        "Documentos legales, finalidades, aceptaciones, mecanismos ARCO y seguimiento de su ejecución.",
+        "Flujos de medios/adjuntos, moderación y avisos del panel en la API.",
+        "Controladores, DTO, servicios, reglas, pruebas y documentación propias."
+      ],
+      "carpetas": [
+        "src/modules/security/**",
+        "src/modules/auth/**",
+        "src/modules/accounts/**",
+        "src/modules/legal/**",
+        "src/modules/privacy/**",
+        "src/modules/media/**",
+        "src/modules/moderation/**"
+      ],
+      "excepcion": "repositories/**, SQL, fixtures y pruebas de persistencia pertenecen a José.",
+      "primer_bloque": "Validación y reglas de documentos/registro, capacidades públicas de seguridad y pruebas aisladas; integración al disponer de persistencia real."
+    },
+    "rafael": {
+      "nombre": "Rafael",
+      "area": "Contenido, minijuegos, participación y economía",
+      "responsabilidades": [
+        "Unidades, niveles, actividades, borradores, publicación y estructura utilizada.",
+        "Generación/revisión de tableros y evaluación de minijuegos.",
+        "Intentos, respuestas, recuperaciones, progreso y cierre de nivel.",
+        "Economía, vidas, regeneración, gemas, XP, racha, compras y correcciones de juego.",
+        "Cartas, evoluciones y diccionario, incluidas sus operaciones administrativas.",
+        "Controladores, DTO, servicios, reglas, pruebas y documentación propias."
+      ],
+      "carpetas": [
+        "src/modules/content/**",
+        "src/modules/minigames/**",
+        "src/modules/gameplay/**",
+        "src/modules/economy/**",
+        "src/modules/collection/**",
+        "src/modules/dictionary/**"
+      ],
+      "excepcion": "repositories/**, SQL, fixtures y pruebas de persistencia pertenecen a José.",
+      "primer_bloque": "Contratos de contenido, composición de nivel y evaluación pura del primer minijuego. Revisar valores iniciales del jugador fijados en el contrato."
+    },
+    "reglas_comunes": [
+      "Las pruebas y documentación acompañan a cada área; la calidad no se asigna a una sola persona.",
+      "Los nombres de carpetas son límites previstos, no evidencia de implementación.",
+      "Los repositorios permanecen dentro del módulo funcional aunque José los escriba.",
+      "Cualquier delegación identifica bloque, archivos y criterio de cierre; no trabajar simultáneamente sobre el archivo delegado.",
+      "El número de rutas no equivale a esfuerzo. El reparto acordado se mantiene."
+    ]
+  },
+  "archivos_compartidos": {
+    "integrador": "José",
+    "rutas": [
+      "src/main.ts",
+      "src/app.module.ts",
+      "src/app.controller.ts",
+      "src/app.service.ts",
+      "src/app.controller.spec.ts",
+      "package.json",
+      "package-lock.json",
+      "tsconfig*.json",
+      "nest-cli.json",
+      "vitest*.ts",
+      ".oxlintrc.json",
+      ".prettierrc",
+      ".gitignore",
+      ".gitattributes",
+      ".env.example",
+      "AGENTS.md",
+      ".github/**",
+      "README.md",
+      "docs/README.md",
+      "docs/openapi/**",
+      "docs/architecture/**",
+      "docs/team/**",
+      "docs/decisions/**",
+      "test/app.e2e-spec.ts"
+    ],
+    "protocolo": [
+      "Solicitar archivo, motivo, alcance y dependencia antes de editar un punto compartido.",
+      "José realiza el cambio o delega archivos concretos; su propietario evita edición paralela durante la delegación.",
+      "Cambiar firmas públicas consumidas por otro se acuerda antes de integrar. Mantener los contratos junto a su módulo.",
+      "Usar archivos propios para tests y documentación; no concentrar todo en la prueba raíz.",
+      "Formatear/modificar solo los archivos de la tarea y separar cambios globales de herramientas."
+    ]
+  },
+  "reglas_funcionales_vigentes": {
+    "camino": "Unidades secuenciales, un final por unidad; estructura fija después de comenzar su uso.",
+    "nivel": "3–6 actividades; máximo dos por tipo.",
+    "ejecuciones": "Una inicial y dos recuperaciones por actividad: máximo tres.",
+    "vidas": {
+      "maximo": 5,
+      "regeneracion": "Una por hora hasta cinco.",
+      "reserva": "Incluida en el total; reservar no consume ni inicia regeneración.",
+      "consumo": "Fallo/abandono consume una; aprobación/cancelación libera la reserva según el contrato."
+    },
+    "recompensa_normal": {
+      "gemas": 150,
+      "xp": 100
+    },
+    "recompensa_final": {
+      "gemas": 300,
+      "xp": 250,
+      "carta": true,
+      "regla": "Sustituye la normal, no se suman."
+    },
+    "repeticion": "Sin premio inicial duplicado; puede acreditar racha. La racha no concede ventajas adicionales.",
+    "paquetes_vidas": [
+      {
+        "vidas": 1,
+        "gemas": 100
+      },
+      {
+        "vidas": 3,
+        "gemas": 150
+      },
+      {
+        "vidas": 5,
+        "gemas": 250
+      }
+    ],
+    "evoluciones": {
+      "costes_gemas": [
+        150,
+        350,
+        500
+      ],
+      "orden": "Secuencial; carta con base y tres etapas antes de publicar."
+    },
+    "retroalimentacion": "Preguntas con feedback inmediato; aprobación al superar todas las actividades.",
+    "conectividad": {
+      "heartbeat_segundos": 15,
+      "vencimiento_segundos": 60,
+      "reanudacion": "Sin reanudación tras interrupción confirmada; recuperar resultados perdidos según contrato."
+    },
+    "primera_aprobacion": "Única por jugador/nivel, incluso con otra revisión; economía y adquisiciones atómicas.",
+    "autoridad": "El servidor evalúa, calcula y deriva identidad/rol. El cliente no decide aprobación, saldo, autor de auditoría o permisos."
+  },
+  "registro_y_seguridad": {
+    "contexto": "SISTEMA de origen interno; no atribuir un actor humano que todavía no existe.",
+    "pendiente_horas": 24,
+    "codigo_minutos": 10,
+    "maximo_intentos_codigo": 5,
+    "reenvio_minimo_segundos": 60,
+    "identificador": "En registro, Challenge.id identifica registros_pendientes y se usa como registrationId. El desafío interno cambia al reenviar.",
+    "aceptacion": "Capturar IP confiable y hora original en el servidor; conservarlas al vincular la aceptación después de verificar.",
+    "documentos": "Comprobar versiones/finalidades al iniciar y confirmar; si cambiaron, exigir aceptación explícita nueva.",
+    "finalidades": "consienteFinalidadesIds contiene códigos estables, no UUID; validar unicidad, pertenencia al aviso y finalidades necesarias.",
+    "contrasena": "Argon2id desde el pendiente; conservar literalmente la entrada durante validación/hash. Nunca truncarla o registrarla en claro.",
+    "correo_existente": "Respuesta genérica equivalente; no duplicar cuenta, reemplazar su contraseña o emitir sesión de la cuenta anterior.",
+    "codigo_incorrecto": "Persistir contador una vez por intención, confirmar el rechazo esperado y después producir el error HTTP. Una excepción previa al commit no debe borrar el incremento.",
+    "confirmacion": "Cuenta, estado inicial, aceptación original, consumo de código, marca del pendiente, sesión y recuperación idempotente se confirman conjuntamente.",
+    "estado_inicial": {
+      "rol": "JUGADOR",
+      "situacion_operativa": "HABILITADA",
+      "gemas": 0,
+      "xp": 0,
+      "vidas": 5,
+      "proxima_regeneracion": null,
+      "racha_ultimo_dia": null,
+      "racha_contador": 0,
+      "racha_zona": "Etc/UTC",
+      "premio_registro": false
+    },
+    "sesiones": {
+      "access_maximo_segundos": 900,
+      "jugador_dias_absolutos": 30,
+      "administrador_horas_absolutas": 8,
+      "confirmacion_sensible_segundos": 300,
+      "refresh": "Rotatorio/revocable, con hash en persistencia; cookie administrativa HttpOnly, Secure, SameSite=Strict."
+    },
+    "idempotencia": {
+      "clave": "UUID por intención; reintentos conservan clave y cuerpo.",
+      "respuesta_normal_horas": 24,
+      "respuesta_con_tokens_minutos": 5,
+      "proteccion": "Respuestas sensibles cifradas, huella protegida y autorización reevaluada al recuperar; no renovar credenciales ni eludir revocación."
+    },
+    "errores": "application/problem+json, códigos del contrato y requestId; sin SQL, PII, tokens o trazas privadas.",
+    "fuente": "docs/architecture/registro.md",
+    "elegibilidad": "Validar mayoría de edad y calendario según RegistrationInput; la fecha de nacimiento no se desplaza por zona horaria.",
+    "perfil": "Nombre, apellidos, fecha de nacimiento, correo y hash de contraseña; avatar opcional tras verificar."
+  },
+  "privacidad_y_auditoria": {
+    "compromisos": [
+      "Exportación JSON de datos propios excluyendo secretos y terceros.",
+      "ARCO con identidad verificada, resolución, alcance, plazos y pasos de ejecución.",
+      "Cancelación con restricción/revocación, cancelación de intento sin consumo y eliminación/anonimización coordinadas.",
+      "No marcar supresión completa con archivos, terceros, respaldos o pasos requeridos pendientes.",
+      "Control mínimo de eliminación fuera del snapshot restaurable; reaplicar eliminaciones antes de habilitar restauración.",
+      "TLS/HTTPS, cifrado en reposo, claves fuera de la base y permisos mínimos.",
+      "Logs sin contraseñas, tokens, RFC, datos bancarios o mensajes privados en claro.",
+      "Cambios administrativos y auditoría en la misma confirmación: fecha/hora, actor, acción, recurso, correlación y campos permitidos.",
+      "Trabajos internos reintentables con caducidad, alertas y evidencia.",
+      "Verificación de proveedores, datos mínimos transferidos y mecanismos de supresión antes de datos reales."
+    ],
+    "responsables": {
+      "flujo": "Uzzi",
+      "sql_y_controles_tecnicos": "José",
+      "cancelacion_y_datos_de_juego": "Rafael"
+    },
+    "limite": "La guía no acredita controles desplegados ni cumplimiento legal. Usar los plazos técnicos documentados y verificar las obligaciones aplicables; no inventar plazos legales.",
+    "fuente": "database/docs/responsabilidades_backend.md"
+  },
+  "persistencia_y_transacciones": {
+    "propietario": "José",
+    "reglas": [
+      "Pool común y logins separados de migración, aplicación y mantenimiento.",
+      "El coordinador obtiene un cliente del TransactionRunner y lo pasa a todos los participantes.",
+      "BEGIN, contexto, modificaciones, idempotencia y auditoría usan la misma conexión. Los repositorios no confirman ni abren otra transacción independiente.",
+      "Mantener orden de bloqueos y no esperar correo/objetos/terceros con transacciones abiertas.",
+      "Excepciones técnicas revierten; rechazos con estado aceptado usan resultados tipados confirmados.",
+      "Reintentos acotados con la misma intención; recuperar por idempotencia una confirmación incierta.",
+      "Migraciones aplicadas inmutables; agregar versión y actualizar ejecutor/manifiesto para el siguiente cambio.",
+      "Conservar una sola fuente SQL; no sincronización ORM o schema.sql paralelo.",
+      "Fixtures ficticios únicamente en bases de prueba; no usar credenciales o textos legales de ejemplo en un entorno real."
+    ],
+    "fuentes": [
+      "database/README.md",
+      "docs/architecture/backend.md",
+      "docs/architecture/registration-contracts.ts"
+    ]
+  },
+  "git": {
+    "base_tareas": "develop",
+    "destino_pr": "develop",
+    "estable": "main",
+    "unidad_rama": "Una funcionalidad o bloque coherente, acotado y revisable; contiene varios pasos relacionados y varios commits.",
+    "permanencia": "Continuar en la misma rama durante el bloque y sus revisiones, incluso entre días de trabajo.",
+    "crear_otra_rama_cuando": [
+      "Comienza un bloque distinto.",
+      "Existe una tarea independiente en paralelo.",
+      "Una urgencia coordinada necesita aislamiento.",
+      "Se integró el bloque anterior y comienza otro."
+    ],
+    "no_crear_rama_por": [
+      "Cada commit.",
+      "Cada archivo, método, DTO o prueba.",
+      "Agregar documentación del bloque.",
+      "Corregir observaciones de la misma PR.",
+      "Sincronizar develop o retomar el mismo bloque otro día."
+    ],
+    "limite": "Evitar tanto una rama por cambio mínimo como una rama permanente por persona que acumule toda su área.",
+    "ejemplos_bloques": [
+      {
+        "persona": "José",
+        "rama": "feat/jose-persistencia-registro",
+        "resultado": "Persistencia acordada del primer flujo en varios commits."
+      },
+      {
+        "persona": "Uzzi",
+        "rama": "feat/uzzi-registro",
+        "resultado": "Registro e integración de sus capacidades, con pruebas."
+      },
+      {
+        "persona": "Rafael",
+        "rama": "feat/rafael-evaluacion-preguntas",
+        "resultado": "Evaluación de un primer tipo de minijuego y sus reglas probadas."
+      }
+    ],
+    "commits": {
+      "criterio": "Un propósito entendible y coherente por commit; código y pruebas necesarias pueden ir juntos.",
+      "tamanio": "El suficiente para revisar y explicar el cambio; sin cuota de líneas, archivos o número de commits.",
+      "mensaje": "En español y con un cambio concreto. Usar tipo(alcance): descripción para mantener consistencia.",
+      "tipos": [
+        "feat",
+        "fix",
+        "test",
+        "docs",
+        "refactor",
+        "chore"
+      ],
+      "ejemplos_validos": [
+        "feat(database): agrega contexto de las transacciones",
+        "feat(auth): persiste registros pendientes y códigos",
+        "feat(auth): valida datos del registro y aceptación legal",
+        "fix(auth): conserva los intentos de código incorrecto",
+        "feat(gameplay): evalúa respuestas de preguntas",
+        "test(gameplay): cubre el tercer fallo de una actividad",
+        "docs(team): aclara commits y ramas por bloque"
+      ],
+      "mensajes_a_evitar": [
+        "cambios",
+        "update",
+        "fix",
+        "avance",
+        "ahora sí",
+        "final final"
+      ],
+      "separar": "No mezclar funcionalidades ajenas, reformateos globales, migraciones no relacionadas o herramientas con el objetivo del commit.",
+      "coherencia": "No fragmentar artificialmente un cambio para dejar imports, firmas o pruebas deliberadamente rotos.",
+      "ritmo": "Guardar avances lógicos. Un push comparte varios commits y no implica abrir otra rama o PR.",
+      "validacion": "Comprobar lo afectado antes de confirmar; pruebas relevantes para lógica y conjunto acordado antes de integrar. No repetir la suite de aplicación por cada corrección documental.",
+      "revision_staging": [
+        "git status --short",
+        "git diff",
+        "git add con rutas propias explícitas",
+        "git diff --cached",
+        "git diff --cached --stat"
+      ],
+      "historial": "Conservar commits progresivos con Create a merge commit. Evitar squash masivo y no reescribir historia compartida mediante rebase/force-push sin acuerdo.",
+      "ejemplo_secuencia_en_una_rama": {
+        "rama": "feat/uzzi-registro",
+        "commits": [
+          "feat(auth): valida la solicitud y aceptación del registro",
+          "feat(auth): coordina el registro pendiente y reenvío",
+          "feat(auth): confirma el registro y prepara la sesión"
+        ],
+        "nota": "Secuencia orientativa. Cada commit incluye las pruebas necesarias y depende de capacidades reales disponibles; no es una cuota ni obliga a esos títulos."
+      }
+    },
+    "comandos_orientativos": {
+      "advertencia": "Ejemplos para un bloque nuevo de Uzzi; comprobar estado y archivos existentes. No cambiar de rama con trabajo sin resolver ni arrastrar cambios de otra tarea.",
+      "inicio_bloque": [
+        "git status",
+        "git switch develop",
+        "git pull --ff-only origin develop",
+        "git switch -c feat/uzzi-registro"
+      ],
+      "continuar_misma_rama": [
+        "git status",
+        "git diff",
+        "git add src/modules/auth/auth.service.ts src/modules/auth/auth.service.spec.ts",
+        "git diff --cached",
+        "git commit -m \"feat(auth): coordina el registro pendiente\"",
+        "git push -u origin feat/uzzi-registro"
+      ],
+      "sincronizar_sin_cambiar_rama": [
+        "git fetch origin",
+        "git merge origin/develop"
+      ],
+      "resolucion": "Revisar, resolver y comprobar los conflictos en la rama del bloque. No resolverlos automáticamente con reset --hard, git clean o force-push."
+    },
+    "pull_requests": {
+      "alcance": "Una PR por bloque coherente; actualizarla con los commits de revisión.",
+      "draft": "Usar cuando se comparte avance o falta una dependencia necesaria de integración.",
+      "contenido": [
+        "Problema y resultado.",
+        "Módulos, rutas y archivos afectados.",
+        "Dependencias disponibles y bloqueos.",
+        "Cambios compartidos o de contrato/esquema acordados.",
+        "Comandos ejecutados, resultados reales y limitaciones."
+      ],
+      "revision": "José coordina la integración; el responsable funcional revisa cambios que le afectan. Los cambios de José también reciben revisión de Uzzi o Rafael.",
+      "cierre": [
+        "Diff revisado contra develop.",
+        "Conflictos resueltos y dependencias reales integradas.",
+        "Validaciones pertinentes correctas.",
+        "Contrato y documentación coherentes.",
+        "Sin secretos, duplicación de capacidades o dobles de producción."
+      ],
+      "integracion": "Create a merge commit para preservar los commits lógicos.",
+      "promocion_main": "PR de develop hacia main para una versión estable validada, coordinada por José.",
+      "protecciones": "El acuerdo no configura ni acredita protecciones, checks automáticos o CODEOWNERS; no inventar usuarios GitHub.",
+      "limpieza": "Después de integrar, retirar solo la rama terminada de forma coordinada; no borrar ramas activas ajenas ni reutilizar la integrada para otro bloque."
+    }
+  },
+  "handoffs": {
+    "solicitud_persistencia": [
+      "Operación y finalidad.",
+      "Entradas y tipos.",
+      "Salida y errores esperados.",
+      "Reglas e invariantes.",
+      "Transacción y recursos compartidos.",
+      "Prueba o criterio de cierre."
+    ],
+    "jose": "Implementa repositorio, SQL y pruebas de persistencia con las firmas acordadas.",
+    "responsable_funcional": "Integra mediante la capacidad pública y comprueba reglas, autorización y HTTP.",
+    "dependencia_lista": "Implementada, probada e integrada en develop; una firma o un archivo que compila no bastan.",
+    "bloqueo": "Informar responsable, dependencia, archivos y trabajo independiente que continúa. La parte dependiente permanece en Draft; no duplicar la capacidad pendiente.",
+    "ejemplos": [
+      {
+        "flujo": "Registro",
+        "coordina": "Uzzi",
+        "persistencia": "José",
+        "aporte_rafael": "Revisar valores iniciales; no exige terminar gameplay."
+      },
+      {
+        "flujo": "Aprobación/compra",
+        "coordina": "Rafael",
+        "persistencia": "José",
+        "aporte_uzzi": "Identidad y acceso mediante capacidades públicas."
+      },
+      {
+        "flujo": "Cancelación ARCO",
+        "coordina": "Uzzi",
+        "persistencia_y_purga": "José",
+        "aporte_rafael": "Cancelación de intento y datos de juego mediante interfaces públicas."
+      }
+    ]
+  },
+  "validacion_por_tipo": {
+    "backend": {
+      "comandos": [
+        "npm run build",
+        "npx tsc --noEmit",
+        "npm run lint",
+        "npm run test",
+        "npm run test:e2e"
+      ],
+      "criterio": "Pruebas pertinentes y regresión del bloque; resultados reales."
+    },
+    "sql": {
+      "comando": "python database/tests/ejecutar.py",
+      "condiciones": "Base nueva, vacía, desechable criterika_prueba_* con migración aplicada, según database/README.md. José gestiona ese entorno."
+    },
+    "conexion": {
+      "comando": "npm run db:check",
+      "condiciones": "Configurar el entorno con el login de aplicación; secretos y CA fuera de este JSON."
+    },
+    "documentacion": {
+      "comprobaciones": [
+        "JSON válido.",
+        "Rutas, enlaces y propietarios consistentes.",
+        "Matriz sin operaciones repetidas o sin dueño.",
+        "Compatibilidad con contrato y arquitectura."
+      ],
+      "limite": "Una entrega documental no declara pruebas de aplicación o infraestructura ejecutadas."
+    },
+    "formato": "Prettier local únicamente sobre los archivos propios modificados; no reformatear todo el proyecto en una funcionalidad."
+  },
+  "orden_de_trabajo": {
+    "primero": "Leer las fuentes vigentes y acordar el bloque, sus archivos, dependencias y cierre.",
+    "paralelo_inicial": {
+      "jose": [
+        "Preparar RDS y verificación real al iniciar ese bloque.",
+        "Implementar transacciones, idempotencia y repositorios mínimos del registro."
+      ],
+      "uzzi": [
+        "DTO, reglas de registro, documentos y seguridad.",
+        "Pruebas aisladas e integración cuando estén listas las dependencias reales."
+      ],
+      "rafael": [
+        "Contratos de contenido y composición de nivel.",
+        "Evaluación pura del primer minijuego y sus pruebas."
+      ]
+    },
+    "despues": [
+      "Cerrar registro/correo/aceptación/sesión con persistencia real.",
+      "Continuar por bloques de contenido, juego y economía.",
+      "Completar ARCO, mantenimiento y comprobaciones operativas antes de datos reales."
+    ],
+    "sobrecarga": "Si hace falta delegar, acordar un bloque y sus archivos; no intervenir silenciosamente en el trabajo ajeno."
+  },
+  "asignacion_operaciones": {
+    "fuente": "docs/team/operaciones.md",
+    "version_contrato": "1.0.2",
+    "prefijo_comun": "/api/v1",
+    "total": 142,
+    "cantidades_funcionales": {
+      "jose": 4,
+      "uzzi": 69,
+      "rafael": 69
+    },
+    "propietario_persistencia_todas": "José",
+    "convencion": "Cada cadena contiene MÉTODO y ruta sin prefijo común. Se asigna responsabilidad funcional; no se reasigna SQL.",
+    "por_integrante": {
+      "jose": [
+        "GET /health",
+        "GET /admin/audit-events",
+        "GET /admin/audit-events/{auditEventId}",
+        "GET /admin/maintenance/status"
+      ],
+      "uzzi": [
+        "GET /legal/documents/current",
+        "GET /legal/documents/{documentVersionId}",
+        "GET /me/acceptances",
+        "POST /me/acceptances",
+        "POST /auth/registrations",
+        "POST /auth/registrations/{registrationId}/resend",
+        "POST /auth/registrations/{registrationId}/verify",
+        "POST /auth/sessions",
+        "POST /auth/refresh",
+        "POST /auth/password-reset-requests",
+        "POST /auth/password-resets",
+        "POST /auth/logout",
+        "POST /auth/reauthentications",
+        "POST /admin/auth/challenges",
+        "POST /admin/auth/challenges/{challengeId}/resend",
+        "POST /admin/auth/challenges/{challengeId}/verify",
+        "POST /admin/auth/refresh",
+        "POST /admin/auth/logout",
+        "GET /admin/me",
+        "GET /me",
+        "PATCH /me",
+        "PUT /me/avatar",
+        "DELETE /me/avatar",
+        "GET /me/sessions",
+        "DELETE /me/sessions/{sessionId}",
+        "PUT /me/password",
+        "GET /privacy/help",
+        "GET /me/privacy/export",
+        "GET /me/privacy/requests",
+        "POST /me/privacy/requests",
+        "GET /me/privacy/requests/{requestId}",
+        "POST /me/privacy/requests/{requestId}/messages",
+        "POST /me/deletion-requests",
+        "POST /privacy/intake-challenges",
+        "POST /privacy/intake-challenges/{challengeId}/resend",
+        "POST /privacy/intake-challenges/{challengeId}/verify",
+        "POST /privacy/requests",
+        "GET /privacy/requests/{requestId}",
+        "POST /privacy/requests/{requestId}/attachments",
+        "POST /privacy/email-confirmations",
+        "GET /privacy/requests",
+        "GET /media/{mediaId}",
+        "GET /admin/dashboard",
+        "GET /admin/players/{playerId}/sanctions",
+        "POST /admin/players/{playerId}/sanctions",
+        "GET /admin/sanctions/{sanctionId}",
+        "POST /admin/sanctions/{sanctionId}/revocations",
+        "GET /admin/review-cases",
+        "GET /admin/review-cases/{caseId}",
+        "POST /admin/review-cases/{caseId}/resolutions",
+        "POST /admin/media",
+        "DELETE /admin/media/{mediaId}",
+        "GET /admin/legal/documents",
+        "POST /admin/legal/documents",
+        "GET /admin/legal/documents/{documentVersionId}",
+        "PUT /admin/legal/documents/{documentVersionId}",
+        "POST /admin/legal/documents/{documentVersionId}/publish",
+        "GET /admin/players",
+        "GET /admin/players/{playerId}",
+        "POST /admin/players/{playerId}/personal-data-accesses",
+        "GET /admin/privacy/requests",
+        "GET /admin/privacy/requests/{requestId}",
+        "POST /admin/privacy/requests/{requestId}/identity-checks",
+        "POST /admin/privacy/requests/{requestId}/messages",
+        "POST /admin/privacy/requests/{requestId}/extensions",
+        "POST /admin/privacy/requests/{requestId}/resolutions",
+        "POST /admin/privacy/requests/{requestId}/executions",
+        "GET /admin/privacy/executions/{privacyExecutionId}",
+        "GET /admin/privacy/requests/{requestId}/export"
+      ],
+      "rafael": [
+        "GET /me/economy",
+        "GET /me/progress",
+        "GET /me/gem-movements",
+        "GET /learning/path",
+        "GET /levels/{levelId}",
+        "GET /me/attempts",
+        "GET /me/attempts/current",
+        "POST /levels/{levelId}/attempts",
+        "GET /attempts/{attemptId}",
+        "POST /attempts/{attemptId}/heartbeats",
+        "POST /attempts/{attemptId}/abandonments",
+        "GET /attempts/{attemptId}/execution",
+        "POST /attempts/{attemptId}/executions/{executionId}/answers",
+        "GET /shop/life-packages",
+        "POST /me/life-purchases",
+        "GET /me/life-purchases/{purchaseId}",
+        "GET /collection/cards",
+        "GET /collection/cards/{cardId}",
+        "POST /collection/cards/{cardId}/evolutions",
+        "GET /me/evolution-purchases/{purchaseId}",
+        "GET /dictionary/terms",
+        "GET /dictionary/terms/{termId}",
+        "GET /admin/units",
+        "POST /admin/units",
+        "POST /admin/units/order",
+        "GET /admin/units/{unitId}",
+        "PATCH /admin/units/{unitId}",
+        "DELETE /admin/units/{unitId}",
+        "POST /admin/units/{unitId}/publish",
+        "POST /admin/units/{unitId}/disable",
+        "POST /admin/units/{unitId}/enable",
+        "GET /admin/units/{unitId}/levels",
+        "POST /admin/units/{unitId}/levels",
+        "POST /admin/units/{unitId}/levels/order",
+        "GET /admin/levels/{levelId}",
+        "PATCH /admin/levels/{levelId}",
+        "DELETE /admin/levels/{levelId}",
+        "POST /admin/levels/{levelId}/publish",
+        "POST /admin/levels/{levelId}/disable",
+        "POST /admin/levels/{levelId}/enable",
+        "GET /admin/levels/{levelId}/activities",
+        "POST /admin/levels/{levelId}/activities",
+        "POST /admin/levels/{levelId}/activities/order",
+        "GET /admin/activities/{activityId}",
+        "PATCH /admin/activities/{activityId}",
+        "DELETE /admin/activities/{activityId}",
+        "POST /admin/activities/{activityId}/board-generations",
+        "POST /admin/activities/{activityId}/board-approval",
+        "GET /admin/units/{unitId}/card",
+        "PUT /admin/units/{unitId}/card",
+        "GET /admin/cards/{cardId}",
+        "POST /admin/cards/{cardId}/publish",
+        "POST /admin/cards/{cardId}/disable",
+        "POST /admin/cards/{cardId}/enable",
+        "POST /admin/cards/{cardId}/evolutions/{stage}/disable",
+        "POST /admin/cards/{cardId}/evolutions/{stage}/enable",
+        "GET /admin/terms",
+        "POST /admin/terms",
+        "GET /admin/terms/{termId}",
+        "PATCH /admin/terms/{termId}",
+        "DELETE /admin/terms/{termId}",
+        "POST /admin/terms/{termId}/publish",
+        "POST /admin/terms/{termId}/disable",
+        "POST /admin/terms/{termId}/enable",
+        "GET /admin/players/{playerId}/gem-movements",
+        "POST /admin/players/{playerId}/gem-adjustments",
+        "POST /admin/players/{playerId}/xp-adjustments",
+        "POST /admin/players/{playerId}/life-adjustments",
+        "POST /admin/players/{playerId}/progress-corrections"
+      ]
+    }
+  },
+  "uso_por_asistentes": {
+    "contexto": "Compartir este JSON con el repositorio y leer las fuentes actuales antes de modificar.",
+    "instrucciones": [
+      "Trabajar en el área del integrante que recibe ayuda y respetar la reserva de persistencia de José.",
+      "Comprobar bloque y rama activos; continuar allí cuando corresponde sin abrir ramas por cada paso.",
+      "Mostrar cambios y validación por avance lógico; usar commits pequeños y entendibles.",
+      "Informar dependencias pendientes y avanzar únicamente partes independientes.",
+      "No fabricar repositorios en memoria, autenticación que acepte siempre o controles omitidos para cerrar una dependencia.",
+      "Utilizar dobles solo en pruebas aisladas y distinguirlos de integración real.",
+      "No cambiar contrato, economía, permisos o esquema por comodidad local.",
+      "No publicar áreas ajenas ni actuar fuera de la autorización del responsable del bloque.",
+      "No enviar mensajes a compañeros por iniciativa propia.",
+      "No crear recursos de nube, aplicar migraciones o manejar credenciales fuera del alcance del bloque autorizado."
+    ]
+  },
+  "mantenimiento_guia": {
+    "responsable": "José, coordinando al equipo.",
+    "actualizar_cuando": [
+      "Cambian responsables o archivos.",
+      "Cambian operaciones/contrato.",
+      "Cambian arquitectura o interfaces públicas.",
+      "Se implementan realmente nuevas etapas o cambian herramientas/validaciones.",
+      "Cambian acuerdos de commits, ramas o integración."
+    ],
+    "coherencia": "Actualizar el JSON y el acuerdo de responsabilidades cuando cambie una regla. Consultar especificaciones actuales y código revisado antes de cada bloque.",
+    "datos_excluidos": "Credenciales, endpoints reales de RDS, datos personales de usuarios, claves de proveedor y usuarios GitHub supuestos."
+  }
+}

@@ -8,6 +8,8 @@ Se mantiene un monolito modular, organizado por funcionalidades, con controlador
 
 Los caminos de este documento son límites de trabajo previstos; no indican que los módulos funcionales ya existan. El contrato funcional vigente es OpenAPI 1.0.2.
 
+La guía compartible con el contexto, las responsabilidades y los ejemplos de commits está en [criterika_coordinacion_equipo.json](criterika_coordinacion_equipo.json). Mantener ambos acuerdos coherentes cuando cambie una regla.
+
 ## Reparto principal
 
 | Integrante | Área principal | Entregables |
