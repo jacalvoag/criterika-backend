@@ -24,7 +24,7 @@ Los cambios en una base ya instalada se entregan mediante otra migración. La in
 
 ## Flujo de trabajo
 
-Las ramas de trabajo parten de `develop` y sus cambios se revisan mediante pull request. Se mantienen commits con un propósito concreto. `main` se reserva para versiones estables; las protecciones automáticas se configuran por separado si el equipo las necesita.
+Las ramas de trabajo parten de `develop` y corresponden a una funcionalidad o bloque coherente. Se permanece en la misma rama durante sus varios commits pequeños, pruebas, documentación y revisiones; no se crea otra rama por cada cambio mínimo. La PR del bloque apunta a `develop` y se integra mediante Create a merge commit para conservar su secuencia lógica. `main` se reserva para versiones estables; las protecciones automáticas se configuran y verifican por separado.
 
 ## Límite de esta entrega
 

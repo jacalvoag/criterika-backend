@@ -46,6 +46,7 @@ Las pruebas del backend se ejecutan con Vitest. Las pruebas PostgreSQL tienen su
 | [docs/decisions/](docs/decisions/) | Decisiones de trabajo y fuentes vigentes. |
 | [docs/architecture/backend.md](docs/architecture/backend.md) | Arquitectura, dependencias, transacciones y acuerdo del primer flujo de registro. |
 | [docs/team/responsabilidades.md](docs/team/responsabilidades.md) | Áreas de José, Uzzi y Rafael, propiedad de archivos y protocolo de integración. |
+| [docs/team/criterika_coordinacion_equipo.json](docs/team/criterika_coordinacion_equipo.json) | Guía compartible del desarrollo, responsabilidades, commits, ramas y coordinación. |
 | [database/README.md](database/README.md) | Organización y aplicación de los SQL. |
 | [database/migrations/](database/migrations/) | Cambios versionados de PostgreSQL. |
 | [database/docs/responsabilidades_backend.md](database/docs/responsabilidades_backend.md) | Responsabilidades de los servicios y del entorno. |
@@ -59,7 +60,7 @@ El esquema SQL se conserva como archivos independientes. Para instalarlo, seguir
 
 `develop` es la rama de integración y la predeterminada del repositorio. Los cambios parten de ella en ramas con un propósito concreto y se proponen mediante pull request. `main` se reserva para versiones estables. No se presupone que existan reglas automáticas de protección configuradas.
 
-Usar commits pequeños y coherentes. Actualizar el contrato cuando cambie el comportamiento HTTP y agregar una migración para los cambios de una base ya instalada. No modificar migraciones aplicadas.
+Usar una rama por funcionalidad o bloque coherente y varios commits pequeños y entendibles dentro de ella. Continuar en esa rama durante sus pruebas y revisiones; crear otra al cambiar de bloque, no por cada commit. Integrar mediante Create a merge commit para conservar la secuencia. Actualizar el contrato cuando cambie HTTP y agregar una migración para una base ya instalada; no modificar migraciones aplicadas.
 
 No versionar credenciales, archivos `.env`, tokens ni datos personales reales. Los ejemplos de configuración deberán usar valores ficticios y los secretos se suministrarán desde el entorno.
 

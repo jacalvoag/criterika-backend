@@ -26,3 +26,7 @@ Los archivos terminados en `v1` conservan su nombre; la revisión puntual del co
 - [Arquitectura del backend](architecture/backend.md): módulos, dependencias y coordinación transaccional.
 - [Primer flujo de registro](architecture/registro.md): secuencia, firmas, persistencia y criterios de aceptación.
 - [Firmas TypeScript de registro](architecture/registration-contracts.ts): acuerdos compilables, sin implementación de endpoints.
+
+## Guía compartible del equipo
+
+[criterika_coordinacion_equipo.json](team/criterika_coordinacion_equipo.json) reúne el contexto vigente al preparar la guía, las responsabilidades, los límites de archivos, la matriz de operaciones y los acuerdos de commits pequeños dentro de una rama por bloque coherente.
