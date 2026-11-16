@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
+import { PostgresModule } from './database/postgres.module.js';
 
 @Module({
-  imports: [],
+  imports: [PostgresModule],
   controllers: [AppController],
   providers: [AppService],
 })
