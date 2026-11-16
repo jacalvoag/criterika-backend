@@ -44,6 +44,7 @@ Las pruebas del backend se ejecutan con Vitest. Las pruebas PostgreSQL tienen su
 | [docs/openapi/](docs/openapi/) | Contrato OpenAPI y guía de revisión. |
 | [docs/database/](docs/database/) | Modelos conceptual y lógico vigentes. |
 | [docs/decisions/](docs/decisions/) | Decisiones de trabajo y fuentes vigentes. |
+| [docs/team/responsabilidades.md](docs/team/responsabilidades.md) | Áreas de José, Uzzi y Rafael, propiedad de archivos y protocolo de integración. |
 | [database/README.md](database/README.md) | Organización y aplicación de los SQL. |
 | [database/migrations/](database/migrations/) | Cambios versionados de PostgreSQL. |
 | [database/docs/responsabilidades_backend.md](database/docs/responsabilidades_backend.md) | Responsabilidades de los servicios y del entorno. |

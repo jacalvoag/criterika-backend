@@ -14,6 +14,8 @@ Esta carpeta reúne las especificaciones vigentes que guían la implementación.
 8. [Conexión a PostgreSQL](development/postgresql.md): preparación del login, variables de entorno y comprobación desde NestJS.
 9. [Decisión de conexión](decisions/0002_conexion_postgresql.md): cliente SQL, permisos y TLS.
 10. [Comprobación de conexión](development/verificacion_postgresql.md): pruebas y alcance de la integración inicial.
+11. [Reparto del equipo](team/responsabilidades.md): responsabilidades, límites y dependencias de José, Uzzi y Rafael.
+12. [Asignación de operaciones](team/operaciones.md): responsable funcional de cada operación del contrato.
 
 El YAML se puede importar completo en [Swagger Editor](https://editor.swagger.io/). Su incorporación al repositorio no instala Swagger UI en la aplicación.
 
