@@ -11,6 +11,9 @@ Esta carpeta reúne las especificaciones vigentes que guían la implementación.
 5. [Base física modular](../database/README.md): instalación, migraciones y pruebas SQL.
 6. [Responsabilidades del backend](../database/docs/responsabilidades_backend.md): reglas que el DDL no implementa por sí solo.
 7. [Decisiones de trabajo](decisions/0001_fuentes_y_alcance.md): fuentes de referencia y mantenimiento de los documentos.
+8. [Conexión a PostgreSQL](development/postgresql.md): preparación del login, variables de entorno y comprobación desde NestJS.
+9. [Decisión de conexión](decisions/0002_conexion_postgresql.md): cliente SQL, permisos y TLS.
+10. [Comprobación de conexión](development/verificacion_postgresql.md): pruebas y alcance de la integración inicial.
 
 El YAML se puede importar completo en [Swagger Editor](https://editor.swagger.io/). Su incorporación al repositorio no instala Swagger UI en la aplicación.
 
