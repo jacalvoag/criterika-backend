@@ -1,0 +1,83 @@
+{
+  "version": "0001",
+  "description": "Base inicial modular de Criterika",
+  "files": [
+    {
+      "path": "migrations/0001_inicial/00_esquemas_roles.sql",
+      "sha256": "06f29e2a80f92a48187bd6ae17363e4649a0473d3325c78a46b3ed5c75a68d58"
+    },
+    {
+      "path": "migrations/0001_inicial/10_tablas_cuentas.sql",
+      "sha256": "32c9cfef3015746580b1d2177e6238d27b6d6676984495aa23ec26e14be93a9c"
+    },
+    {
+      "path": "migrations/0001_inicial/11a_tablas_aprendizaje.sql",
+      "sha256": "95d7cdd277f0a30718681659bc4cc550bbf8ed0089e549c9b84b4e1fde39cc78"
+    },
+    {
+      "path": "migrations/0001_inicial/11b_tablas_cartas_diccionario_archivos.sql",
+      "sha256": "f46873699203535db39e91ab45842cdbf6bbec24b38997b359991b3e7f674385"
+    },
+    {
+      "path": "migrations/0001_inicial/12_tablas_participacion.sql",
+      "sha256": "9586cfd6343a2080193afa92e0bc3527f546a91f90178a236c2bb4b97e180dd1"
+    },
+    {
+      "path": "migrations/0001_inicial/13_tablas_economia.sql",
+      "sha256": "3005540a9be9108847a0ba0ef88a09469d1ea531d3d61763d8fa2eebb5d9d0e2"
+    },
+    {
+      "path": "migrations/0001_inicial/14a_tablas_aceptaciones.sql",
+      "sha256": "4a7ad7021c28f31427559892bbb78e9fe54a8356b8867ad2b8d64d17ed63ad52"
+    },
+    {
+      "path": "migrations/0001_inicial/14b_tablas_derechos_privacidad.sql",
+      "sha256": "f1a41d7b42a6c2ab131442488008be1a44bbbe04cd4e77d5b89b24550b9ce0d4"
+    },
+    {
+      "path": "migrations/0001_inicial/14c_tablas_moderacion_auditoria.sql",
+      "sha256": "62355c236408c6d464a286364159858c380abcb71dd7e5d89dc98b1f2097241e"
+    },
+    {
+      "path": "migrations/0001_inicial/15_tablas_soportes.sql",
+      "sha256": "c66dfb97b976c6cfdff3e7f143996a2e957e039b8ff905627ed5211b09472e51"
+    },
+    {
+      "path": "migrations/0001_inicial/20_claves_y_relaciones.sql",
+      "sha256": "a5cb49579c886669011d98b4f5362d5b5bcd8abd8b276267950acbbc28aacd44"
+    },
+    {
+      "path": "migrations/0001_inicial/21_restricciones.sql",
+      "sha256": "df6161a7f249acc414644bd6bea594978d21200ac010b82f67cc76a53a5514cd"
+    },
+    {
+      "path": "migrations/0001_inicial/22_indices.sql",
+      "sha256": "afe188ace1b9c5212ab189b6c4b8f4c166dcab8e7d49bc32be2eb1c8b900572c"
+    },
+    {
+      "path": "migrations/0001_inicial/30_funciones_contexto_auditoria.sql",
+      "sha256": "0c9d3ce42c5bee5707ac0a6b751d28c7052d955cef0229083d3db6585fee5bb2"
+    },
+    {
+      "path": "migrations/0001_inicial/31_funciones_proteccion.sql",
+      "sha256": "7e5cec9221879ef608acc3fa3582d51c533148d89af8c27b0e952b0773b8f2e0"
+    },
+    {
+      "path": "migrations/0001_inicial/32_funciones_integridad_diferida.sql",
+      "sha256": "5e10aa082b7a93cda179a4ddfdef0bcd76e2e4db5280cc53d7cf6726423c7b67"
+    },
+    {
+      "path": "migrations/0001_inicial/40_triggers.sql",
+      "sha256": "39fa58506404600c9b37e0402f2bd48708b60ef9f73e760bec7a02e3ad5df9c7"
+    },
+    {
+      "path": "migrations/0001_inicial/50_permisos.sql",
+      "sha256": "07730713488a324d165a98dfbd1f6e512042e0b042daa3f05e01cb9a1d5c0375"
+    },
+    {
+      "path": "migrations/0001_inicial/60_datos_base.sql",
+      "sha256": "96bb50c2d02f43adf252d4fa21dc5bf28ea64cd85f57ca479171bf79bc01ba96"
+    }
+  ],
+  "checksum": "0e1650371506badc64008add2437b8215f1d3d9275e26d95face2a0b30a33d32"
+}
