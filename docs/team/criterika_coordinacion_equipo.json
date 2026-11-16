@@ -364,7 +364,7 @@
     "errores": "application/problem+json, códigos del contrato y requestId; sin SQL, PII, tokens o trazas privadas.",
     "fuente": "docs/architecture/registro.md",
     "elegibilidad": "Validar mayoría de edad y calendario según RegistrationInput; la fecha de nacimiento no se desplaza por zona horaria.",
-    "perfil": "Nombre, apellidos, fecha de nacimiento, correo y hash de contraseña; avatar opcional tras verificar."
+    "perfil": "El perfil público incluye nombre, apellidos, fecha de nacimiento, correo y avatar opcional según UserProfile. No incluye contraseñas, hashes, códigos o tokens; las credenciales y sus verificadores tienen representaciones separadas."
   },
   "privacidad_y_auditoria": {
     "compromisos": [
