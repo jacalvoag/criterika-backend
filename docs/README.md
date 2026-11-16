@@ -20,3 +20,9 @@ Esta carpeta reúne las especificaciones vigentes que guían la implementación.
 El YAML se puede importar completo en [Swagger Editor](https://editor.swagger.io/). Su incorporación al repositorio no instala Swagger UI en la aplicación.
 
 Los archivos terminados en `v1` conservan su nombre; la revisión puntual del contrato se consulta en `info.version`. Los modelos documentan su nivel de diseño y los SQL implementan la estructura física. Los modelos antiguos descartados no forman parte de esta base.
+
+## Arquitectura e integración
+
+- [Arquitectura del backend](architecture/backend.md): módulos, dependencias y coordinación transaccional.
+- [Primer flujo de registro](architecture/registro.md): secuencia, firmas, persistencia y criterios de aceptación.
+- [Firmas TypeScript de registro](architecture/registration-contracts.ts): acuerdos compilables, sin implementación de endpoints.
