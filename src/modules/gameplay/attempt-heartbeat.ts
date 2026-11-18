@@ -35,13 +35,17 @@ export function resolveAttemptHeartbeat(
   }
 
   if (nowMs - lastSignalMs >= HEARTBEAT_TIMEOUT_MS) {
+    const deadline = communicationDeadline(lastSignalMs);
+
+    // The attempt ended at its deadline, even if it is processed later.
     return {
       ok: false,
       resolucion: 'ABANDONADO_POR_TIMEOUT',
       estado: 'ABANDONADO',
       motivoFinalizacion: 'TIMEOUT',
+      finalizadoEn: deadline,
       consumeVida: true,
-      limiteComunicacionEn: communicationDeadline(lastSignalMs),
+      limiteComunicacionEn: deadline,
     };
   }
 

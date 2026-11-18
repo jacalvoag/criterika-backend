@@ -22,6 +22,7 @@ export interface HeartbeatTimedOut {
   resolucion: 'ABANDONADO_POR_TIMEOUT';
   estado: 'ABANDONADO';
   motivoFinalizacion: 'TIMEOUT';
+  finalizadoEn: Date;
   consumeVida: true;
   limiteComunicacionEn: Date;
 }

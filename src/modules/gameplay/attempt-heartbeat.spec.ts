@@ -40,6 +40,7 @@ describe('resolveAttemptHeartbeat', () => {
       resolucion: 'ABANDONADO_POR_TIMEOUT',
       estado: 'ABANDONADO',
       motivoFinalizacion: 'TIMEOUT',
+      finalizadoEn: DEADLINE,
       consumeVida: true,
       limiteComunicacionEn: DEADLINE,
     });
@@ -51,6 +52,7 @@ describe('resolveAttemptHeartbeat', () => {
       resolucion: 'ABANDONADO_POR_TIMEOUT',
       estado: 'ABANDONADO',
       motivoFinalizacion: 'TIMEOUT',
+      finalizadoEn: DEADLINE,
       consumeVida: true,
       limiteComunicacionEn: DEADLINE,
     });
@@ -121,6 +123,7 @@ describe('resolveAttemptHeartbeat', () => {
       expect(lateHeartbeat.ok).toBe(false);
       expect(lateHeartbeat.estado).toBe('ABANDONADO');
       expect(lateHeartbeat).toHaveProperty('consumeVida', true);
+      expect(lateHeartbeat).toHaveProperty('finalizadoEn', DEADLINE);
 
       const persisted: AttemptHeartbeatState = {
         estado: lateHeartbeat.estado,
