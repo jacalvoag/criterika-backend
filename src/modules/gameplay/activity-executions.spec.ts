@@ -85,6 +85,65 @@ describe('evaluateActivityExecutions', () => {
       reason: 'EXECUTION_AFTER_PASS',
     });
   });
+
+  it('cuenta la ejecución inicial en curso como iniciada', () => {
+    expect(evaluateActivityExecutions(['EN_CURSO'])).toEqual({
+      valid: true,
+      estado: 'EN_EJECUCION',
+      ejecucionesIniciadas: 1,
+      puedeEjecutar: false,
+      esRecuperacion: false,
+    });
+  });
+
+  it('marca como recuperación una ejecución en curso tras un fallo', () => {
+    expect(evaluateActivityExecutions(['FALLIDA', 'EN_CURSO'])).toEqual({
+      valid: true,
+      estado: 'EN_EJECUCION',
+      ejecucionesIniciadas: 2,
+      puedeEjecutar: false,
+      esRecuperacion: true,
+    });
+  });
+
+  it('no agota la actividad mientras la tercera ejecución sigue en curso', () => {
+    expect(
+      evaluateActivityExecutions(['FALLIDA', 'FALLIDA', 'EN_CURSO']),
+    ).toEqual({
+      valid: true,
+      estado: 'EN_EJECUCION',
+      ejecucionesIniciadas: MAX_EXECUTIONS_PER_ACTIVITY,
+      puedeEjecutar: false,
+      esRecuperacion: true,
+    });
+  });
+
+  it('rechaza una ejecución en curso que no sea la última del historial', () => {
+    expect(evaluateActivityExecutions(['EN_CURSO', 'FALLIDA'])).toEqual({
+      valid: false,
+      reason: 'EXECUTION_AFTER_OPEN',
+    });
+  });
+
+  it('rechaza dos ejecuciones en curso a la vez', () => {
+    expect(evaluateActivityExecutions(['EN_CURSO', 'EN_CURSO'])).toEqual({
+      valid: false,
+      reason: 'EXECUTION_AFTER_OPEN',
+    });
+  });
+
+  it('rechaza una ejecución en curso después de aprobar', () => {
+    expect(evaluateActivityExecutions(['SUPERADA', 'EN_CURSO'])).toEqual({
+      valid: false,
+      reason: 'EXECUTION_AFTER_PASS',
+    });
+  });
+
+  it('rechaza una cuarta ejecución en curso', () => {
+    expect(
+      evaluateActivityExecutions(['FALLIDA', 'FALLIDA', 'FALLIDA', 'EN_CURSO']),
+    ).toEqual({ valid: false, reason: 'EXECUTION_LIMIT_EXCEEDED' });
+  });
 });
 
 describe('canStartExecution', () => {
@@ -113,6 +172,20 @@ describe('canStartExecution', () => {
     expect(canStartExecution(['FALLIDA', 'SUPERADA'])).toEqual({
       allowed: false,
       reason: 'ACTIVITY_ALREADY_PASSED',
+    });
+  });
+
+  it('rechaza otra ejecución mientras la inicial sigue abierta', () => {
+    expect(canStartExecution(['EN_CURSO'])).toEqual({
+      allowed: false,
+      reason: 'EXECUTION_ALREADY_OPEN',
+    });
+  });
+
+  it('rechaza otra ejecución mientras una recuperación sigue abierta', () => {
+    expect(canStartExecution(['FALLIDA', 'EN_CURSO'])).toEqual({
+      allowed: false,
+      reason: 'EXECUTION_ALREADY_OPEN',
     });
   });
 

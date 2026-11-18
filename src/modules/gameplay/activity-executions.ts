@@ -9,12 +9,12 @@
  */
 export const MAX_EXECUTIONS_PER_ACTIVITY = 3;
 
-/** Final outcome of an evaluated execution (GameActionResult.resultadoEjecucion). */
-export type ExecutionOutcome = 'SUPERADA' | 'FALLIDA';
+/** Outcome of a started execution (GameActionResult.resultadoEjecucion). */
+export type ExecutionOutcome = 'EN_CURSO' | 'SUPERADA' | 'FALLIDA';
 
 /** Internal reasons for an impossible history; the contract has no code for them. */
 export type ExecutionHistoryViolation =
-  'EXECUTION_LIMIT_EXCEEDED' | 'EXECUTION_AFTER_PASS';
+  'EXECUTION_LIMIT_EXCEEDED' | 'EXECUTION_AFTER_PASS' | 'EXECUTION_AFTER_OPEN';
 
 export type ActivityExecutionsResult =
   | {
@@ -22,6 +22,13 @@ export type ActivityExecutionsResult =
       estado: 'PENDIENTE' | 'PENDIENTE_RECUPERACION';
       ejecucionesIniciadas: number;
       puedeEjecutar: true;
+      esRecuperacion: boolean;
+    }
+  | {
+      valid: true;
+      estado: 'EN_EJECUCION';
+      ejecucionesIniciadas: number;
+      puedeEjecutar: false;
       esRecuperacion: boolean;
     }
   | {
@@ -47,11 +54,13 @@ export type StartExecutionResult =
       reason:
         | 'EXECUTION_LIMIT_REACHED'
         | 'ACTIVITY_ALREADY_PASSED'
+        | 'EXECUTION_ALREADY_OPEN'
         | ExecutionHistoryViolation;
     };
 
 /**
- * Derives the activity state from its finished executions, in order.
+ * Derives the activity state from its started executions, in order.
+ * Only the last execution may still be open (EN_CURSO).
  */
 export function evaluateActivityExecutions(
   history: readonly ExecutionOutcome[],
@@ -60,6 +69,11 @@ export function evaluateActivityExecutions(
 
   if (ejecucionesIniciadas > MAX_EXECUTIONS_PER_ACTIVITY) {
     return { valid: false, reason: 'EXECUTION_LIMIT_EXCEEDED' };
+  }
+
+  const openIndex = history.indexOf('EN_CURSO');
+  if (openIndex !== -1 && openIndex !== ejecucionesIniciadas - 1) {
+    return { valid: false, reason: 'EXECUTION_AFTER_OPEN' };
   }
 
   const passIndex = history.indexOf('SUPERADA');
@@ -72,6 +86,16 @@ export function evaluateActivityExecutions(
       estado: 'SUPERADA',
       ejecucionesIniciadas,
       puedeEjecutar: false,
+    };
+  }
+
+  if (openIndex !== -1) {
+    return {
+      valid: true,
+      estado: 'EN_EJECUCION',
+      ejecucionesIniciadas,
+      puedeEjecutar: false,
+      esRecuperacion: ejecucionesIniciadas > 1,
     };
   }
 
@@ -106,6 +130,9 @@ export function canStartExecution(
 
   if (!result.valid) {
     return { allowed: false, reason: result.reason };
+  }
+  if (result.estado === 'EN_EJECUCION') {
+    return { allowed: false, reason: 'EXECUTION_ALREADY_OPEN' };
   }
   if (result.estado === 'SUPERADA') {
     return { allowed: false, reason: 'ACTIVITY_ALREADY_PASSED' };
