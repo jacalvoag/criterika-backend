@@ -109,7 +109,11 @@ describe('validateLifePurchase', () => {
       {
         paqueteId: 'VIDA_1',
         gemas: 100,
-        lives: lives({ totales: 1, reservadas: 1, proximaRegeneracionEn: next }),
+        lives: lives({
+          totales: 1,
+          reservadas: 1,
+          proximaRegeneracionEn: next,
+        }),
       },
       NOW,
     );
