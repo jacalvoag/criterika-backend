@@ -26,8 +26,13 @@ export interface EffectiveLives extends LivesState {
 export type ReservationOutcome =
   'APROBADO' | 'CANCELADO' | 'FALLIDO' | 'ABANDONADO';
 
+/**
+ * ALREADY_RESERVED is an internal reason (no contract code): schema Lives
+ * allows one reserved life at most.
+ */
 export type ReserveLifeResult =
-  { ok: true; state: LivesState } | { ok: false; reason: 'NO_LIVES' };
+  | { ok: true; state: LivesState }
+  | { ok: false; reason: 'NO_LIVES' | 'ALREADY_RESERVED' };
 
 /**
  * NO_RESERVATION is an internal reason (no contract code): settling an
@@ -68,6 +73,10 @@ export function calculateLives(state: LivesState, now: Date): EffectiveLives {
 }
 
 export function reserveLife(state: LivesState, now: Date): ReserveLifeResult {
+  if (state.reservadas === 1) {
+    return { ok: false, reason: 'ALREADY_RESERVED' };
+  }
+
   const current = calculateLives(state, now);
   if (current.disponibles < 1) {
     return { ok: false, reason: 'NO_LIVES' };

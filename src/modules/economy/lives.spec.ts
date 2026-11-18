@@ -132,7 +132,7 @@ describe('reserveLife', () => {
     ).toEqual({ ok: false, reason: 'NO_LIVES' });
   });
 
-  it('rechaza con NO_LIVES si la única vida ya está reservada', () => {
+  it('rechaza con ALREADY_RESERVED si la única vida ya está reservada', () => {
     expect(
       reserveLife(
         state({
@@ -142,7 +142,14 @@ describe('reserveLife', () => {
         }),
         NOW,
       ),
-    ).toEqual({ ok: false, reason: 'NO_LIVES' });
+    ).toEqual({ ok: false, reason: 'ALREADY_RESERVED' });
+  });
+
+  it('rechaza con ALREADY_RESERVED una segunda reserva aunque queden vidas', () => {
+    expect(reserveLife(state({ totales: 5, reservadas: 1 }), NOW)).toEqual({
+      ok: false,
+      reason: 'ALREADY_RESERVED',
+    });
   });
 });
 
