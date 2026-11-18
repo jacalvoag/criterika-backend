@@ -49,6 +49,29 @@ export type LifePurchaseResult =
     }
   | { ok: false; reason: 'LIFE_CAP_EXCEEDED' | 'INSUFFICIENT_GEMS' };
 
+/** LifePackage.motivosBloqueo, in contract order. */
+const LIFE_PACKAGE_BLOCK_REASONS = [
+  'SALDO_INSUFICIENTE',
+  'LIMITE_VIDAS',
+  'SANCION',
+  'ACEPTACION_REQUERIDA',
+  'PRIVACIDAD',
+  'EDAD_NO_ADMITIDA',
+] as const;
+
+export type LifePackageBlockReason =
+  (typeof LIFE_PACKAGE_BLOCK_REASONS)[number];
+
+/** Blocks that depend on the account; the caller resolves them. */
+export type LifePackageAccountBlock = Exclude<
+  LifePackageBlockReason,
+  'SALDO_INSUFICIENTE' | 'LIMITE_VIDAS'
+>;
+
+export interface LifePackageBlocksInput extends LifePurchaseInput {
+  restricciones?: readonly LifePackageAccountBlock[];
+}
+
 export interface EvolutionPurchaseInput {
   etapa: EvolutionStage;
   etapaActual: CardStage;
@@ -99,6 +122,28 @@ export function validateLifePurchase(
         totales === MAX_LIVES ? null : current.proximaRegeneracionEn,
     },
   };
+}
+
+/**
+ * Lists every reason that blocks a package in the shop (listLifePackages).
+ * Unlike validateLifePurchase, it does not stop at the first rejection.
+ */
+export function getLifePackageBlocks(
+  input: LifePackageBlocksInput,
+  now: Date,
+): LifePackageBlockReason[] {
+  const { vidas, costoGemas } = LIFE_PACKAGES[input.paqueteId];
+  const { totales } = calculateLives(input.lives, now);
+
+  const blocks = new Set<LifePackageBlockReason>(input.restricciones);
+  if (input.gemas < costoGemas) {
+    blocks.add('SALDO_INSUFICIENTE');
+  }
+  if (totales + vidas > MAX_LIVES) {
+    blocks.add('LIMITE_VIDAS');
+  }
+
+  return LIFE_PACKAGE_BLOCK_REASONS.filter((reason) => blocks.has(reason));
 }
 
 export function validateEvolutionPurchase(

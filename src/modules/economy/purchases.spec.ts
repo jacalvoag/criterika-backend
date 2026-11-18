@@ -1,5 +1,6 @@
 import type { LivesState } from './lives.js';
 import {
+  getLifePackageBlocks,
   validateEvolutionPurchase,
   validateLifePurchase,
   type EvolutionPurchaseInput,
@@ -133,6 +134,109 @@ describe('validateLifePurchase', () => {
     );
 
     expect(result).toEqual({ ok: false, reason: 'LIFE_CAP_EXCEEDED' });
+  });
+});
+
+describe('getLifePackageBlocks', () => {
+  it('no bloquea un paquete comprable con saldo exacto', () => {
+    expect(
+      getLifePackageBlocks(
+        { paqueteId: 'VIDA_1', gemas: 100, lives: lives({ totales: 4 }) },
+        NOW,
+      ),
+    ).toEqual([]);
+  });
+
+  it('reporta solo el saldo insuficiente', () => {
+    expect(
+      getLifePackageBlocks(
+        { paqueteId: 'VIDA_1', gemas: 99, lives: lives({ totales: 4 }) },
+        NOW,
+      ),
+    ).toEqual(['SALDO_INSUFICIENTE']);
+  });
+
+  it('reporta solo el límite de vidas', () => {
+    expect(
+      getLifePackageBlocks(
+        { paqueteId: 'VIDA_1', gemas: 100, lives: lives({ totales: 5 }) },
+        NOW,
+      ),
+    ).toEqual(['LIMITE_VIDAS']);
+  });
+
+  it('reporta saldo y límite juntos, a diferencia de la compra', () => {
+    const input = {
+      paqueteId: 'VIDAS_5',
+      gemas: 0,
+      lives: lives({ totales: 1 }),
+    } as const;
+
+    expect(getLifePackageBlocks(input, NOW)).toEqual([
+      'SALDO_INSUFICIENTE',
+      'LIMITE_VIDAS',
+    ]);
+    expect(validateLifePurchase(input, NOW)).toEqual({
+      ok: false,
+      reason: 'LIFE_CAP_EXCEEDED',
+    });
+  });
+
+  it('cuenta la vida reservada dentro del límite', () => {
+    expect(
+      getLifePackageBlocks(
+        {
+          paqueteId: 'VIDA_1',
+          gemas: 100,
+          lives: lives({ totales: 5, reservadas: 1 }),
+        },
+        NOW,
+      ),
+    ).toEqual(['LIMITE_VIDAS']);
+  });
+
+  it('aplica la regeneración vencida antes de calcular el límite', () => {
+    expect(
+      getLifePackageBlocks(
+        {
+          paqueteId: 'VIDAS_3',
+          gemas: 150,
+          lives: lives({
+            totales: 2,
+            proximaRegeneracionEn: at('2026-11-15T11:50:00Z'),
+          }),
+        },
+        NOW,
+      ),
+    ).toEqual(['LIMITE_VIDAS']);
+  });
+
+  it('agrega las restricciones de la cuenta en el orden del contrato', () => {
+    expect(
+      getLifePackageBlocks(
+        {
+          paqueteId: 'VIDA_1',
+          gemas: 0,
+          lives: lives({ totales: 4 }),
+          restricciones: ['PRIVACIDAD', 'SANCION'],
+        },
+        NOW,
+      ),
+    ).toEqual(['SALDO_INSUFICIENTE', 'SANCION', 'PRIVACIDAD']);
+  });
+
+  it('no repite una restricción recibida dos veces', () => {
+    expect(
+      getLifePackageBlocks(
+        {
+          paqueteId: 'VIDA_1',
+          gemas: 100,
+          lives: lives({ totales: 4 }),
+          restricciones: ['EDAD_NO_ADMITIDA', 'EDAD_NO_ADMITIDA'],
+        },
+        NOW,
+      ),
+    ).toEqual(['EDAD_NO_ADMITIDA']);
   });
 });
 
