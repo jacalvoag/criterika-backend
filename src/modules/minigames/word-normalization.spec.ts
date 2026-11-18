@@ -152,6 +152,28 @@ describe('normalizeWordText', () => {
     });
   });
 
+  describe('caracteres invisibles', () => {
+    it.each([
+      ['espacio de ancho cero', '​'],
+      ['separador de ancho cero', '‌'],
+      ['unión de ancho cero', '‍'],
+      ['unión de palabras', '⁠'],
+      ['marca de orden de bytes', '﻿'],
+      ['guion suave', '­'],
+      ['control de dirección', '‮'],
+    ])('quita el carácter %s', (_name, invisible) => {
+      expect(normalizeWordText(`pa${invisible}labra`)).toBe('PALABRA');
+    });
+
+    it('iguala un texto con invisibles y el mismo texto sin ellos', () => {
+      expect(normalizeWordText('a​b')).toBe(normalizeWordText('AB'));
+    });
+
+    it('conserva la Ñ cuando un invisible separa la N de su tilde', () => {
+      expect(normalizeWordText('n‍̃')).toBe('Ñ');
+    });
+  });
+
   describe('forma de la salida', () => {
     it('produce un texto que cumple el patrón de BoardPlacement.textoNormalizado', () => {
       expect(normalizeWordText('Señalización vial')).toMatch(/^[A-ZÑ]{2,20}$/);
