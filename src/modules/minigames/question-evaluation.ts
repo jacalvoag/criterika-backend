@@ -1,5 +1,5 @@
+import type { EvaluationResult } from './evaluation-result.js';
 import type {
-  EvaluationResult,
   QuestionAnswer,
   QuestionDefinition,
   QuestionFeedback,

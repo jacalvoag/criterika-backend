@@ -50,7 +50,3 @@ export const QUESTION_REJECTION_REASONS = [
 
 export type QuestionRejectionReason =
   (typeof QUESTION_REJECTION_REASONS)[number];
-
-/** Result shared by every minigame evaluator. */
-export type EvaluationResult<Feedback, Reason extends string> =
-  { valid: true; feedback: Feedback } | { valid: false; reason: Reason };

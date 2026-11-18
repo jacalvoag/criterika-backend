@@ -1,6 +1,6 @@
+import type { EvaluationResult } from './evaluation-result.js';
 import {
   QUESTION_REJECTION_REASONS,
-  type EvaluationResult,
   type QuestionAnswer,
   type QuestionDefinition,
   type QuestionFeedback,
