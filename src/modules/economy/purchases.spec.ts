@@ -238,6 +238,53 @@ describe('getLifePackageBlocks', () => {
       ),
     ).toEqual(['EDAD_NO_ADMITIDA']);
   });
+
+  it('reporta cinco motivos a la vez', () => {
+    expect(
+      getLifePackageBlocks(
+        {
+          paqueteId: 'VIDA_1',
+          gemas: 0,
+          lives: lives({ totales: 5 }),
+          restricciones: ['PRIVACIDAD', 'SANCION', 'ACEPTACION_REQUERIDA'],
+        },
+        NOW,
+      ),
+    ).toEqual([
+      'SALDO_INSUFICIENTE',
+      'LIMITE_VIDAS',
+      'SANCION',
+      'ACEPTACION_REQUERIDA',
+      'PRIVACIDAD',
+    ]);
+  });
+
+  it('reporta los seis motivos sin duplicados', () => {
+    expect(
+      getLifePackageBlocks(
+        {
+          paqueteId: 'VIDA_1',
+          gemas: 0,
+          lives: lives({ totales: 5 }),
+          restricciones: [
+            'EDAD_NO_ADMITIDA',
+            'PRIVACIDAD',
+            'SANCION',
+            'ACEPTACION_REQUERIDA',
+            'SANCION',
+          ],
+        },
+        NOW,
+      ),
+    ).toEqual([
+      'SALDO_INSUFICIENTE',
+      'LIMITE_VIDAS',
+      'SANCION',
+      'ACEPTACION_REQUERIDA',
+      'PRIVACIDAD',
+      'EDAD_NO_ADMITIDA',
+    ]);
+  });
 });
 
 describe('validateEvolutionPurchase', () => {
