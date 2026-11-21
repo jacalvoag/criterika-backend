@@ -54,12 +54,12 @@ describe('Tipos de evaluación de preguntas', () => {
 
   it('un resultado inválido no trae feedback', () => {
     type Result = EvaluationResult<QuestionFeedback, QuestionRejectionReason>;
-    expectTypeOf<Extract<Result, { valid: true }>>().toEqualTypeOf<{
-      valid: true;
+    expectTypeOf<Extract<Result, { ok: true }>>().toEqualTypeOf<{
+      ok: true;
       feedback: QuestionFeedback;
     }>();
-    expectTypeOf<Extract<Result, { valid: false }>>().toEqualTypeOf<{
-      valid: false;
+    expectTypeOf<Extract<Result, { ok: false }>>().toEqualTypeOf<{
+      ok: false;
       reason: QuestionRejectionReason;
     }>();
   });

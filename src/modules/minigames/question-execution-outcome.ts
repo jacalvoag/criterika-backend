@@ -23,8 +23,8 @@ export type QuestionExecutionViolation =
   | 'INVALID_PASS_PERCENTAGE';
 
 export type QuestionExecutionDecision =
-  | { valid: true; resultadoEjecucion: 'SUPERADA' | 'FALLIDA' }
-  | { valid: false; reason: QuestionExecutionViolation };
+  | { ok: true; resultadoEjecucion: 'SUPERADA' | 'FALLIDA' }
+  | { ok: false; reason: QuestionExecutionViolation };
 
 export function decideQuestionExecution(
   { aciertos, totalPreguntas }: QuestionExecutionProgress,
@@ -35,24 +35,24 @@ export function decideQuestionExecution(
     totalPreguntas < 1 ||
     totalPreguntas > MAX_QUESTIONS_PER_EXECUTION
   ) {
-    return { valid: false, reason: 'INVALID_QUESTION_COUNT' };
+    return { ok: false, reason: 'INVALID_QUESTION_COUNT' };
   }
   if (
     !Number.isInteger(aciertos) ||
     aciertos < 0 ||
     aciertos > totalPreguntas
   ) {
-    return { valid: false, reason: 'INVALID_CORRECT_COUNT' };
+    return { ok: false, reason: 'INVALID_CORRECT_COUNT' };
   }
   if (
     !Number.isInteger(porcentajeMinimo) ||
     porcentajeMinimo < MIN_PASS_PERCENTAGE ||
     porcentajeMinimo > MAX_PASS_PERCENTAGE
   ) {
-    return { valid: false, reason: 'INVALID_PASS_PERCENTAGE' };
+    return { ok: false, reason: 'INVALID_PASS_PERCENTAGE' };
   }
 
   // Compared as integers so a fractional percentage can never round in favor of the player.
   const passed = aciertos * 100 >= porcentajeMinimo * totalPreguntas;
-  return { valid: true, resultadoEjecucion: passed ? 'SUPERADA' : 'FALLIDA' };
+  return { ok: true, resultadoEjecucion: passed ? 'SUPERADA' : 'FALLIDA' };
 }

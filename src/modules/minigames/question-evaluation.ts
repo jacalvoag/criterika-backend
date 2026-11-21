@@ -17,17 +17,17 @@ export function evaluateQuestion(
   answer: QuestionAnswer,
 ): EvaluationResult<QuestionFeedback, QuestionRejectionReason> {
   if (answer.preguntaId.trim() === '' || answer.opcionId.trim() === '') {
-    return { valid: false, reason: 'EMPTY_ANSWER' };
+    return { ok: false, reason: 'EMPTY_ANSWER' };
   }
   if (answer.preguntaId !== definition.id) {
-    return { valid: false, reason: 'QUESTION_MISMATCH' };
+    return { ok: false, reason: 'QUESTION_MISMATCH' };
   }
   if (!definition.opciones.some((option) => option.id === answer.opcionId)) {
-    return { valid: false, reason: 'OPTION_NOT_FOUND' };
+    return { ok: false, reason: 'OPTION_NOT_FOUND' };
   }
 
   return {
-    valid: true,
+    ok: true,
     feedback: {
       tipo: 'PREGUNTAS',
       correcta: answer.opcionId === definition.opcionCorrectaId,

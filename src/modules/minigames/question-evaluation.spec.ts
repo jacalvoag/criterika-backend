@@ -33,7 +33,7 @@ function answer(overrides: Partial<QuestionAnswer> = {}): QuestionAnswer {
 describe('evaluateQuestion', () => {
   it('marca correcta la opción correcta y devuelve el feedback', () => {
     expect(evaluateQuestion(definition, answer())).toEqual({
-      valid: true,
+      ok: true,
       feedback: {
         tipo: 'PREGUNTAS',
         correcta: true,
@@ -48,7 +48,7 @@ describe('evaluateQuestion', () => {
     expect(
       evaluateQuestion(definition, answer({ opcionId: WRONG_ID })),
     ).toEqual({
-      valid: true,
+      ok: true,
       feedback: {
         tipo: 'PREGUNTAS',
         correcta: false,
@@ -62,19 +62,19 @@ describe('evaluateQuestion', () => {
   it('rechaza una opción que no pertenece a la pregunta', () => {
     expect(
       evaluateQuestion(definition, answer({ opcionId: UNKNOWN_ID })),
-    ).toEqual({ valid: false, reason: 'OPTION_NOT_FOUND' });
+    ).toEqual({ ok: false, reason: 'OPTION_NOT_FOUND' });
   });
 
   it('rechaza una opción vacía', () => {
     expect(evaluateQuestion(definition, answer({ opcionId: '' }))).toEqual({
-      valid: false,
+      ok: false,
       reason: 'EMPTY_ANSWER',
     });
   });
 
   it('rechaza un preguntaId vacío', () => {
     expect(evaluateQuestion(definition, answer({ preguntaId: '' }))).toEqual({
-      valid: false,
+      ok: false,
       reason: 'EMPTY_ANSWER',
     });
   });
@@ -82,14 +82,14 @@ describe('evaluateQuestion', () => {
   it('rechaza una respuesta dirigida a otra pregunta', () => {
     expect(
       evaluateQuestion(definition, answer({ preguntaId: UNKNOWN_ID })),
-    ).toEqual({ valid: false, reason: 'QUESTION_MISMATCH' });
+    ).toEqual({ ok: false, reason: 'QUESTION_MISMATCH' });
   });
 
   it('ignora un campo del cliente que diga que acertó', () => {
     const forged = { ...answer({ opcionId: WRONG_ID }), correcta: true };
     const result = evaluateQuestion(definition, forged);
     expect(result).toMatchObject({
-      valid: true,
+      ok: true,
       feedback: { correcta: false },
     });
   });
@@ -109,11 +109,11 @@ describe('evaluateQuestion', () => {
       pista: 'Piensa en la vía pacífica.',
     };
     expect(evaluateQuestion(scenario, answer())).toMatchObject({
-      valid: true,
+      ok: true,
       feedback: { correcta: true, opcionCorrectaId: CORRECT_ID },
     });
     expect(
       evaluateQuestion(scenario, answer({ opcionId: WRONG_ID })),
-    ).toMatchObject({ valid: true, feedback: { correcta: false } });
+    ).toMatchObject({ ok: true, feedback: { correcta: false } });
   });
 });

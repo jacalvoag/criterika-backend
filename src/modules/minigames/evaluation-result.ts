@@ -1,3 +1,3 @@
 /** Result shared by every minigame evaluator. */
 export type EvaluationResult<Feedback, Reason extends string> =
-  { valid: true; feedback: Feedback } | { valid: false; reason: Reason };
+  { ok: true; feedback: Feedback } | { ok: false; reason: Reason };
