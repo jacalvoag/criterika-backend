@@ -1,7 +1,7 @@
+import type { Coordinate } from './coordinate.js';
 import type { EvaluationResult } from './evaluation-result.js';
 import { normalizeWordText } from './word-normalization.js';
 import type {
-  Coordinate,
   WordSearchAnswer,
   WordSearchDefinition,
   WordSearchFeedback,

@@ -1,8 +1,4 @@
-/** Board cell (Coordinate in the OpenAPI contract). */
-export interface Coordinate {
-  fila: number;
-  columna: number;
-}
+import type { Coordinate } from './coordinate.js';
 
 /** BoardPlacement.orientacion in the OpenAPI contract. */
 export type BoardOrientation = 'HORIZONTAL' | 'VERTICAL';

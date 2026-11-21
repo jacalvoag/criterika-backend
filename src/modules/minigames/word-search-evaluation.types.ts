@@ -1,12 +1,7 @@
+import type { Coordinate } from './coordinate.js';
 import type { MinigameType } from './minigame-type.js';
 
 type WordSearchType = Extract<MinigameType, 'SOPA_LETRAS'>;
-
-/** Zero-based cell, mirroring Coordinate in the OpenAPI contract. */
-export type Coordinate = {
-  fila: number;
-  columna: number;
-};
 
 /** Target word, mirroring WordTarget (id and text from WordClueInput). */
 export type WordSearchWord = {
