@@ -71,6 +71,31 @@ export function placementCells(
   );
 }
 
+/** A start cell and orientation for one word. */
+export interface BoardPosition {
+  inicio: Coordinate;
+  orientacion: BoardOrientation;
+}
+
+/** Every position where a word of `length` letters fits, in both orientations. */
+export function boardPositions(
+  length: number,
+  { filas, columnas }: BoardConfiguration,
+): BoardPosition[] {
+  const positions: BoardPosition[] = [];
+  for (const orientacion of ORIENTATIONS) {
+    const lastRow = orientacion === 'VERTICAL' ? filas - length : filas - 1;
+    const lastColumn =
+      orientacion === 'HORIZONTAL' ? columnas - length : columnas - 1;
+    for (let fila = 0; fila <= lastRow; fila += 1) {
+      for (let columna = 0; columna <= lastColumn; columna += 1) {
+        positions.push({ inicio: { fila, columna }, orientacion });
+      }
+    }
+  }
+  return positions;
+}
+
 export function randomIndex(random: RandomSource, length: number): number {
   return Math.min(Math.floor(random() * length), length - 1);
 }

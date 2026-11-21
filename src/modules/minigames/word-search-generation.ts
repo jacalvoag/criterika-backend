@@ -7,9 +7,9 @@ import type {
   RandomSource,
 } from './board-generation.types.js';
 import {
+  boardPositions,
   isValidBoardSize,
   longestFirst,
-  ORIENTATIONS,
   placementCells,
   prepareBoardWords,
   randomIndex,
@@ -126,7 +126,8 @@ function placeWords(
       return true;
     }
     const word = sorted[index];
-    for (const candidate of shuffle(candidates(word, size), random)) {
+    const positions = boardPositions(word.letters.length, size);
+    for (const candidate of shuffle(positions, random)) {
       budget -= 1;
       if (budget < 0) {
         return false;
@@ -162,26 +163,6 @@ function placeWords(
   };
 
   return place(0) ? { grid, placed } : null;
-}
-
-function candidates(
-  word: PreparedWord,
-  size: BoardConfiguration,
-): { inicio: Coordinate; orientacion: BoardOrientation }[] {
-  const length = word.letters.length;
-  const result: { inicio: Coordinate; orientacion: BoardOrientation }[] = [];
-  for (const orientacion of ORIENTATIONS) {
-    const lastRow =
-      orientacion === 'VERTICAL' ? size.filas - length : size.filas - 1;
-    const lastColumn =
-      orientacion === 'HORIZONTAL' ? size.columnas - length : size.columnas - 1;
-    for (let fila = 0; fila <= lastRow; fila += 1) {
-      for (let columna = 0; columna <= lastColumn; columna += 1) {
-        result.push({ inicio: { fila, columna }, orientacion });
-      }
-    }
-  }
-  return result;
 }
 
 /**
@@ -223,33 +204,27 @@ function extraOccurrences(
   grid: readonly string[][],
   placed: readonly Placed[],
 ): Coordinate[][] {
-  const rows = grid.length;
-  const columns = grid[0]?.length ?? 0;
+  const size = { filas: grid.length, columnas: grid[0]?.length ?? 0 };
   const extras: Coordinate[][] = [];
   for (const { word, inicio, orientacion: own } of placed) {
     const length = word.letters.length;
     const reversed = [...word.letters].reverse().join('');
-    for (const orientacion of ORIENTATIONS) {
-      const lastRow = orientacion === 'VERTICAL' ? rows - length : rows - 1;
-      const lastColumn =
-        orientacion === 'HORIZONTAL' ? columns - length : columns - 1;
-      for (let fila = 0; fila <= lastRow; fila += 1) {
-        for (let columna = 0; columna <= lastColumn; columna += 1) {
-          const isOwn =
-            orientacion === own &&
-            fila === inicio.fila &&
-            columna === inicio.columna;
-          if (isOwn) {
-            continue;
-          }
-          const cells = placementCells({ fila, columna }, orientacion, length);
-          const text = cells
-            .map((cell) => grid[cell.fila][cell.columna])
-            .join('');
-          if (text === word.text || text === reversed) {
-            extras.push(cells);
-          }
-        }
+    for (const position of boardPositions(length, size)) {
+      const isOwn =
+        position.orientacion === own &&
+        position.inicio.fila === inicio.fila &&
+        position.inicio.columna === inicio.columna;
+      if (isOwn) {
+        continue;
+      }
+      const cells = placementCells(
+        position.inicio,
+        position.orientacion,
+        length,
+      );
+      const text = cells.map((cell) => grid[cell.fila][cell.columna]).join('');
+      if (text === word.text || text === reversed) {
+        extras.push(cells);
       }
     }
   }
