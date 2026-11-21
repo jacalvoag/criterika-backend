@@ -4,7 +4,7 @@ describe('evaluateLevelApproval', () => {
   it('aprueba el nivel cuando todas las actividades están superadas', () => {
     expect(evaluateLevelApproval(['SUPERADA', 'SUPERADA', 'SUPERADA'])).toEqual(
       {
-        valid: true,
+        ok: true,
         estado: 'APROBADO',
         motivoFinalizacion: 'TODAS_SUPERADAS',
         actividadesSuperadas: 3,
@@ -17,7 +17,7 @@ describe('evaluateLevelApproval', () => {
     expect(
       evaluateLevelApproval(['SUPERADA', 'PENDIENTE', 'SUPERADA', 'SUPERADA']),
     ).toEqual({
-      valid: true,
+      ok: true,
       estado: 'EN_CURSO',
       motivoFinalizacion: null,
       actividadesSuperadas: 3,
@@ -29,7 +29,7 @@ describe('evaluateLevelApproval', () => {
     expect(
       evaluateLevelApproval(['SUPERADA', 'EN_EJECUCION', 'SUPERADA']),
     ).toMatchObject({
-      valid: true,
+      ok: true,
       estado: 'EN_CURSO',
       actividadesSuperadas: 2,
     });
@@ -39,7 +39,7 @@ describe('evaluateLevelApproval', () => {
     expect(
       evaluateLevelApproval(['PENDIENTE_RECUPERACION', 'SUPERADA', 'SUPERADA']),
     ).toMatchObject({
-      valid: true,
+      ok: true,
       estado: 'EN_CURSO',
       motivoFinalizacion: null,
     });
@@ -47,7 +47,7 @@ describe('evaluateLevelApproval', () => {
 
   it('falla el nivel cuando una actividad quedó agotada', () => {
     expect(evaluateLevelApproval(['SUPERADA', 'AGOTADA', 'SUPERADA'])).toEqual({
-      valid: true,
+      ok: true,
       estado: 'FALLIDO',
       motivoFinalizacion: 'TERCER_FALLO',
       actividadesSuperadas: 2,
@@ -66,7 +66,7 @@ describe('evaluateLevelApproval', () => {
         'PENDIENTE',
       ]),
     ).toMatchObject({
-      valid: true,
+      ok: true,
       estado: 'FALLIDO',
       motivoFinalizacion: 'TERCER_FALLO',
       actividadesSuperadas: 1,
@@ -84,19 +84,19 @@ describe('evaluateLevelApproval', () => {
         'SUPERADA',
         'SUPERADA',
       ]),
-    ).toMatchObject({ valid: true, estado: 'APROBADO', totalActividades: 6 });
+    ).toMatchObject({ ok: true, estado: 'APROBADO', totalActividades: 6 });
   });
 
   it('rechaza un intento sin actividades', () => {
     expect(evaluateLevelApproval([])).toEqual({
-      valid: false,
+      ok: false,
       reason: 'INVALID_ACTIVITY_COUNT',
     });
   });
 
   it('rechaza un intento con dos actividades', () => {
     expect(evaluateLevelApproval(['SUPERADA', 'SUPERADA'])).toEqual({
-      valid: false,
+      ok: false,
       reason: 'INVALID_ACTIVITY_COUNT',
     });
   });
@@ -112,12 +112,12 @@ describe('evaluateLevelApproval', () => {
         'SUPERADA',
         'SUPERADA',
       ]),
-    ).toEqual({ valid: false, reason: 'INVALID_ACTIVITY_COUNT' });
+    ).toEqual({ ok: false, reason: 'INVALID_ACTIVITY_COUNT' });
   });
 
   it('rechaza un intento con dos actividades agotadas', () => {
     expect(evaluateLevelApproval(['AGOTADA', 'AGOTADA', 'SUPERADA'])).toEqual({
-      valid: false,
+      ok: false,
       reason: 'MULTIPLE_EXHAUSTED_ACTIVITIES',
     });
   });

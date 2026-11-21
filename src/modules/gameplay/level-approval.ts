@@ -30,21 +30,21 @@ interface LevelProgress {
 
 export type LevelApprovalResult =
   | ({
-      valid: true;
+      ok: true;
       estado: 'APROBADO';
       motivoFinalizacion: 'TODAS_SUPERADAS';
     } & LevelProgress)
   | ({
-      valid: true;
+      ok: true;
       estado: 'FALLIDO';
       motivoFinalizacion: 'TERCER_FALLO';
     } & LevelProgress)
   | ({
-      valid: true;
+      ok: true;
       estado: 'EN_CURSO';
       motivoFinalizacion: null;
     } & LevelProgress)
-  | { valid: false; reason: LevelApprovalViolation };
+  | { ok: false; reason: LevelApprovalViolation };
 
 /**
  * Derives the level outcome from the state of each attempt activity.
@@ -55,12 +55,12 @@ export function evaluateLevelApproval(
   const totalActividades = estados.length;
 
   if (totalActividades < MIN_ACTIVITIES || totalActividades > MAX_ACTIVITIES) {
-    return { valid: false, reason: 'INVALID_ACTIVITY_COUNT' };
+    return { ok: false, reason: 'INVALID_ACTIVITY_COUNT' };
   }
 
   const agotadas = estados.filter((estado) => estado === 'AGOTADA').length;
   if (agotadas > 1) {
-    return { valid: false, reason: 'MULTIPLE_EXHAUSTED_ACTIVITIES' };
+    return { ok: false, reason: 'MULTIPLE_EXHAUSTED_ACTIVITIES' };
   }
 
   const actividadesSuperadas = estados.filter(
@@ -70,7 +70,7 @@ export function evaluateLevelApproval(
 
   if (agotadas === 1) {
     return {
-      valid: true,
+      ok: true,
       estado: 'FALLIDO',
       motivoFinalizacion: 'TERCER_FALLO',
       ...progress,
@@ -78,14 +78,14 @@ export function evaluateLevelApproval(
   }
   if (actividadesSuperadas === totalActividades) {
     return {
-      valid: true,
+      ok: true,
       estado: 'APROBADO',
       motivoFinalizacion: 'TODAS_SUPERADAS',
       ...progress,
     };
   }
   return {
-    valid: true,
+    ok: true,
     estado: 'EN_CURSO',
     motivoFinalizacion: null,
     ...progress,

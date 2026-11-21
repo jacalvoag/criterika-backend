@@ -18,39 +18,39 @@ export type ExecutionHistoryViolation =
 
 export type ActivityExecutionsResult =
   | {
-      valid: true;
+      ok: true;
       estado: 'PENDIENTE' | 'PENDIENTE_RECUPERACION';
       ejecucionesIniciadas: number;
       puedeEjecutar: true;
       esRecuperacion: boolean;
     }
   | {
-      valid: true;
+      ok: true;
       estado: 'EN_EJECUCION';
       ejecucionesIniciadas: number;
       puedeEjecutar: false;
       esRecuperacion: boolean;
     }
   | {
-      valid: true;
+      ok: true;
       estado: 'SUPERADA';
       ejecucionesIniciadas: number;
       puedeEjecutar: false;
     }
   | {
-      valid: true;
+      ok: true;
       estado: 'AGOTADA';
       ejecucionesIniciadas: number;
       puedeEjecutar: false;
       motivoFinalizacion: 'TERCER_FALLO';
       consumeVida: true;
     }
-  | { valid: false; reason: ExecutionHistoryViolation };
+  | { ok: false; reason: ExecutionHistoryViolation };
 
 export type StartExecutionResult =
-  | { allowed: true; esRecuperacion: boolean }
+  | { ok: true; esRecuperacion: boolean }
   | {
-      allowed: false;
+      ok: false;
       reason:
         | 'EXECUTION_LIMIT_REACHED'
         | 'ACTIVITY_ALREADY_PASSED'
@@ -68,21 +68,21 @@ export function evaluateActivityExecutions(
   const ejecucionesIniciadas = history.length;
 
   if (ejecucionesIniciadas > MAX_EXECUTIONS_PER_ACTIVITY) {
-    return { valid: false, reason: 'EXECUTION_LIMIT_EXCEEDED' };
+    return { ok: false, reason: 'EXECUTION_LIMIT_EXCEEDED' };
   }
 
   const openIndex = history.indexOf('EN_CURSO');
   if (openIndex !== -1 && openIndex !== ejecucionesIniciadas - 1) {
-    return { valid: false, reason: 'EXECUTION_AFTER_OPEN' };
+    return { ok: false, reason: 'EXECUTION_AFTER_OPEN' };
   }
 
   const passIndex = history.indexOf('SUPERADA');
   if (passIndex !== -1) {
     if (passIndex !== ejecucionesIniciadas - 1) {
-      return { valid: false, reason: 'EXECUTION_AFTER_PASS' };
+      return { ok: false, reason: 'EXECUTION_AFTER_PASS' };
     }
     return {
-      valid: true,
+      ok: true,
       estado: 'SUPERADA',
       ejecucionesIniciadas,
       puedeEjecutar: false,
@@ -91,7 +91,7 @@ export function evaluateActivityExecutions(
 
   if (openIndex !== -1) {
     return {
-      valid: true,
+      ok: true,
       estado: 'EN_EJECUCION',
       ejecucionesIniciadas,
       puedeEjecutar: false,
@@ -101,7 +101,7 @@ export function evaluateActivityExecutions(
 
   if (ejecucionesIniciadas === MAX_EXECUTIONS_PER_ACTIVITY) {
     return {
-      valid: true,
+      ok: true,
       estado: 'AGOTADA',
       ejecucionesIniciadas,
       puedeEjecutar: false,
@@ -112,7 +112,7 @@ export function evaluateActivityExecutions(
 
   const esRecuperacion = ejecucionesIniciadas > 0;
   return {
-    valid: true,
+    ok: true,
     estado: esRecuperacion ? 'PENDIENTE_RECUPERACION' : 'PENDIENTE',
     ejecucionesIniciadas,
     puedeEjecutar: true,
@@ -128,17 +128,17 @@ export function canStartExecution(
 ): StartExecutionResult {
   const result = evaluateActivityExecutions(history);
 
-  if (!result.valid) {
-    return { allowed: false, reason: result.reason };
+  if (!result.ok) {
+    return { ok: false, reason: result.reason };
   }
   if (result.estado === 'EN_EJECUCION') {
-    return { allowed: false, reason: 'EXECUTION_ALREADY_OPEN' };
+    return { ok: false, reason: 'EXECUTION_ALREADY_OPEN' };
   }
   if (result.estado === 'SUPERADA') {
-    return { allowed: false, reason: 'ACTIVITY_ALREADY_PASSED' };
+    return { ok: false, reason: 'ACTIVITY_ALREADY_PASSED' };
   }
   if (result.estado === 'AGOTADA') {
-    return { allowed: false, reason: 'EXECUTION_LIMIT_REACHED' };
+    return { ok: false, reason: 'EXECUTION_LIMIT_REACHED' };
   }
-  return { allowed: true, esRecuperacion: result.esRecuperacion };
+  return { ok: true, esRecuperacion: result.esRecuperacion };
 }
