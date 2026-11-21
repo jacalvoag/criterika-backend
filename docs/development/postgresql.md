@@ -6,7 +6,35 @@ La aplicación usa un pool `pg`, administrado por `PostgresModule`, y `@nestjs/c
 
 Se necesita PostgreSQL 18 o superior, una base dedicada a Criterika y la migración inicial aplicada. Seguir [las instrucciones de migraciones](../../database/README.md). La credencial migradora se usa fuera del backend.
 
-Después de aplicar la migración, un operador crea el login de aplicación. El nombre de ejemplo es `criterika_api`; estas instrucciones no crean credenciales reales automáticamente:
+### Preparación del propietario en Amazon RDS
+
+Antes de la primera instalación en una instancia RDS nueva, conectar
+como operador y preparar el rol propietario:
+
+```sql
+BEGIN;
+
+CREATE ROLE criterika_owner
+  NOLOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE
+  NOREPLICATION NOBYPASSRLS;
+
+GRANT criterika_owner TO postgres;
+GRANT CREATE ON DATABASE criterika TO criterika_owner;
+
+COMMIT;
+```
+
+Este ejemplo usa `postgres` como operador y `criterika` como base.
+Adaptar los nombres al entorno.
+
+Si el rol ya existe, comprobar sus atributos antes de reutilizarlo
+y omitir `CREATE ROLE`.
+
+El permiso `CREATE` sobre la base permite transferir al rol la
+propiedad de los esquemas durante la instalación. Es distinto del
+atributo `CREATEDB`, que permanece desactivado.
+
+Después, aplicar la migración siguiendo `database/README.md`.
 
 ```sql
 CREATE ROLE criterika_api LOGIN INHERIT
@@ -85,4 +113,6 @@ Los módulos que consulten PostgreSQL pueden importar `PostgresModule` e inyecta
 
 Para operaciones de negocio que necesiten auditoría, reservar un cliente del pool y ejecutar en esa misma conexión `BEGIN`, `criterika.establecer_contexto(...)`, las modificaciones y `COMMIT`. Ante un error, ejecutar `ROLLBACK` y devolver el cliente en `finally`. El actor se obtiene de la identidad autenticada en el servidor. No usar consultas independientes del pool para las partes de una transacción.
 
-Los endpoints de registro, autenticación y juego y las tareas de privacidad siguen pendientes. La configuración TLS implementada debe comprobarse además contra el servidor real que se elija.
+La conexión TLS contra Amazon RDS quedó comprobada según
+[la verificación PostgreSQL](verificacion_postgresql.md).
+Cada entorno nuevo debe repetir su comprobación.

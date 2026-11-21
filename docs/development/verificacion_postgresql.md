@@ -29,7 +29,43 @@ La salida de los procesos se comprobó para evitar la aparición de la contrase�
 
 ## Alcance TLS
 
-Las pruebas verifican la configuración que exige certificados válidos y el rechazo de una conexión que solicita TLS frente a un servidor local sin TLS. No se comprobó aún una conexión TLS positiva contra un servidor con certificado real. Esa verificación corresponde al entorno que se configure.
+Las pruebas previas comprobaron la configuración TLS y el rechazo
+de conexiones incompatibles. El 21 de noviembre de 2026 se verificó
+además una conexión positiva contra Amazon RDS con certificado real.
+
+### Verificación en Amazon RDS
+
+Resultados obtenidos al ejecutar los comandos en el equipo de desarrollo:
+
+| Comprobación | Resultado |
+| --- | --- |
+| Región | México Central (`mx-central-1`) |
+| PostgreSQL del servidor | 18.6 |
+| Cliente psql | 18.1 |
+| Migración registrada | `0001`, Base inicial modular |
+| Tablas del esquema `criterika` | 53 |
+| Login del backend | `criterika_api` |
+| Hereda permisos de `criterika_app` | Sí |
+| Pertenece a `criterika_owner` | No |
+| Pertenece a `criterika_maintenance` | No |
+| Conexión psql con `sslmode=verify-full` | Correcta |
+| Protocolo TLS en psql | TLSv1.3 |
+| Cifrado en psql | TLS_AES_256_GCM_SHA384 |
+| Comprobación del backend con `npm run db:check` | Correcta |
+| Arranque con `npm run start:dev` | Correcto, compilación sin errores |
+
+La configuración del backend utilizó `DB_TLS_MODE=verify-full`
+y el certificado regional de confianza de AWS.
+
+Salida de `npm run db:check`:
+
+```json
+{"status":"ok","postgresqlMajor":18,"tls":true,"tlsVersion":"TLSv1.3"}
+```
+
+Esta comprobación acredita la instalación y conexión del backend.
+No acredita el funcionamiento de los módulos de negocio ni constituye
+una nueva ejecución de las suites unitarias, HTTP o SQL.
 
 ## Reproducción
 
