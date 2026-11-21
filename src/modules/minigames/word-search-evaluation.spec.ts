@@ -1,7 +1,7 @@
+import type { Coordinate } from './coordinate.js';
 import { evaluateWordSearch } from './word-search-evaluation.js';
 import {
   WORD_SEARCH_REJECTION_REASONS,
-  type Coordinate,
   type WordSearchDefinition,
   type WordSearchProgress,
 } from './word-search-evaluation.types.js';

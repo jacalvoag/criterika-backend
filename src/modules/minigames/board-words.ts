@@ -1,8 +1,8 @@
+import type { Coordinate } from './coordinate.js';
 import type {
   BoardConfiguration,
   BoardOrientation,
   BoardWordInput,
-  Coordinate,
   RandomSource,
 } from './board-generation.types.js';
 import { normalizeWordText } from './word-normalization.js';

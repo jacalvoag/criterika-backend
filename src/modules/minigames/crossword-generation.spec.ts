@@ -1,7 +1,7 @@
+import type { Coordinate } from './coordinate.js';
 import type {
   BoardPlacement,
   BoardWordInput,
-  Coordinate,
   GeneratedBoard,
   RandomSource,
 } from './board-generation.types.js';

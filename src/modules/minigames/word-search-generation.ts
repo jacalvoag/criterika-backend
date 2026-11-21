@@ -1,9 +1,9 @@
+import type { Coordinate } from './coordinate.js';
 import type {
   BoardConfiguration,
   BoardGenerationResult,
   BoardOrientation,
   BoardWordInput,
-  Coordinate,
   RandomSource,
 } from './board-generation.types.js';
 import {
