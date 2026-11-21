@@ -20,7 +20,7 @@ export type LevelCompositionViolation =
   | { code: 'TOO_MANY_OF_TYPE'; tipo: MinigameType; count: number };
 
 export type LevelCompositionResult =
-  { valid: true } | { valid: false; violations: LevelCompositionViolation[] };
+  { ok: true } | { ok: false; violations: LevelCompositionViolation[] };
 
 export function validateLevelComposition(
   activities: readonly Pick<Activity, 'tipo'>[],
@@ -44,7 +44,5 @@ export function validateLevelComposition(
     }
   }
 
-  return violations.length === 0
-    ? { valid: true }
-    : { valid: false, violations };
+  return violations.length === 0 ? { ok: true } : { ok: false, violations };
 }
