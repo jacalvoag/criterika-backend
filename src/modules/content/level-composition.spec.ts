@@ -7,7 +7,7 @@ const activities = (...tipos: MinigameType[]) =>
 describe('validateLevelComposition', () => {
   it('rechaza una lista vacía', () => {
     expect(validateLevelComposition([])).toEqual({
-      valid: false,
+      ok: false,
       violations: [{ code: 'TOO_FEW_ACTIVITIES', count: 0 }],
     });
   });
@@ -16,7 +16,7 @@ describe('validateLevelComposition', () => {
     expect(
       validateLevelComposition(activities('MEMORAMA', 'PREGUNTAS')),
     ).toEqual({
-      valid: false,
+      ok: false,
       violations: [{ code: 'TOO_FEW_ACTIVITIES', count: 2 }],
     });
   });
@@ -26,7 +26,7 @@ describe('validateLevelComposition', () => {
       validateLevelComposition(
         activities('MEMORAMA', 'PREGUNTAS', 'CRUCIGRAMA'),
       ),
-    ).toEqual({ valid: true });
+    ).toEqual({ ok: true });
   });
 
   it('acepta 6 actividades con dos de cada uno de tres tipos', () => {
@@ -41,7 +41,7 @@ describe('validateLevelComposition', () => {
           'RELACIONAR',
         ),
       ),
-    ).toEqual({ valid: true });
+    ).toEqual({ ok: true });
   });
 
   it('rechaza 7 actividades aunque ningún tipo pase de dos', () => {
@@ -58,7 +58,7 @@ describe('validateLevelComposition', () => {
         ),
       ),
     ).toEqual({
-      valid: false,
+      ok: false,
       violations: [{ code: 'TOO_MANY_ACTIVITIES', count: 7 }],
     });
   });
@@ -69,7 +69,7 @@ describe('validateLevelComposition', () => {
         activities('PREGUNTAS', 'PREGUNTAS', 'PREGUNTAS', 'MEMORAMA'),
       ),
     ).toEqual({
-      valid: false,
+      ok: false,
       violations: [{ code: 'TOO_MANY_OF_TYPE', tipo: 'PREGUNTAS', count: 3 }],
     });
   });
@@ -90,7 +90,7 @@ describe('validateLevelComposition', () => {
       ),
     );
     expect(result).toEqual({
-      valid: false,
+      ok: false,
       violations: [{ code: 'TOO_MANY_ACTIVITIES', count: 10 }],
     });
   });
@@ -109,7 +109,7 @@ describe('validateLevelComposition', () => {
         ),
       ),
     ).toEqual({
-      valid: false,
+      ok: false,
       violations: [
         { code: 'TOO_MANY_ACTIVITIES', count: 7 },
         { code: 'TOO_MANY_OF_TYPE', tipo: 'SOPA_LETRAS', count: 3 },
