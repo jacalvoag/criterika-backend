@@ -6,34 +6,34 @@
 
 La migración inicial es una sola unidad de cambio, dividida en **19 archivos SQL** por responsabilidad. Los archivos se ejecutan completos dentro de una transacción; no deben aplicarse individualmente.
 
-| Ubicación | Responsabilidad |
-| --- | --- |
-| `aplicar.py` | Comprobar las huellas de los SQL y ejecutar el instalador con `psql`. |
-| `aplicar.sql` | Orden explícito de ejecución, bloqueo de migraciones y transacción. No contiene todo el DDL. |
-| `bootstrap/registro.sql` | Crear el registro técnico de versiones. Puede permanecer vacío si falla la instalación de negocio. |
-| `migrations/0001_inicial/00_esquemas_roles.sql` | Esquemas y grupos técnicos de permisos. |
-| `10_tablas_cuentas.sql` | Identidad, sesiones y operación de cuentas. |
-| `11a_tablas_aprendizaje.sql` | Unidades, niveles, actividades y revisiones. |
-| `11b_tablas_cartas_diccionario_archivos.sql` | Cartas, evoluciones, términos y archivos. |
-| `12_tablas_participacion.sql` | Intentos, actividades del intento, ejecuciones e interacciones. |
-| `13_tablas_economia.sql` | Aprobaciones, gemas, vidas y adquisiciones. |
-| `14a_tablas_aceptaciones.sql` | Versiones legales, finalidades y aceptaciones. |
-| `14b_tablas_derechos_privacidad.sql` | Solicitudes ARCO, verificaciones, resoluciones y ejecución. |
-| `14c_tablas_moderacion_auditoria.sql` | Sanciones, correcciones y bitácora administrativa. |
-| `15_tablas_soportes.sql` | Idempotencia, tareas y controles de eliminación. |
-| `20_claves_y_relaciones.sql` | Claves únicas y relaciones entre tablas ya creadas. |
-| `21_restricciones.sql` | Rangos y combinaciones válidas de estados, fechas e importes. |
-| `22_indices.sql` | Índices de consulta y unicidad condicional. |
-| `30_funciones_contexto_auditoria.sql` | Contexto transaccional y captura de auditoría sin copiar PII. |
-| `31_funciones_proteccion.sql` | Protección de históricos, roles y estructura utilizada. |
-| `32_funciones_integridad_diferida.sql` | Reglas que se comprueban al completar la transacción. |
-| `40_triggers.sql` | Asociar las funciones a los eventos de las tablas. |
-| `50_permisos.sql` | Permisos de aplicación y mantenimiento. |
-| `60_datos_base.sql` | Cinco estados técnicos de tareas; sin cuentas ni textos legales ficticios. |
-| `manifest.json` | Orden y huellas SHA-256 de los archivos de la migración. |
-| `fixtures/00_datos_prueba.sql` | Datos ficticios aislados; nunca se cargan al instalar. |
-| `tests/` | Pruebas, dependencias e informe de la comprobación realizada. |
-| `docs/responsabilidades_backend.md` | Reglas que debe completar el backend y la infraestructura. |
+| Ubicación                                       | Responsabilidad                                                                                    |
+| ----------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| `aplicar.py`                                    | Comprobar las huellas de los SQL y ejecutar el instalador con `psql`.                              |
+| `aplicar.sql`                                   | Orden explícito de ejecución, bloqueo de migraciones y transacción. No contiene todo el DDL.       |
+| `bootstrap/registro.sql`                        | Crear el registro técnico de versiones. Puede permanecer vacío si falla la instalación de negocio. |
+| `migrations/0001_inicial/00_esquemas_roles.sql` | Esquemas y grupos técnicos de permisos.                                                            |
+| `10_tablas_cuentas.sql`                         | Identidad, sesiones y operación de cuentas.                                                        |
+| `11a_tablas_aprendizaje.sql`                    | Unidades, niveles, actividades y revisiones.                                                       |
+| `11b_tablas_cartas_diccionario_archivos.sql`    | Cartas, evoluciones, términos y archivos.                                                          |
+| `12_tablas_participacion.sql`                   | Intentos, actividades del intento, ejecuciones e interacciones.                                    |
+| `13_tablas_economia.sql`                        | Aprobaciones, gemas, vidas y adquisiciones.                                                        |
+| `14a_tablas_aceptaciones.sql`                   | Versiones legales, finalidades y aceptaciones.                                                     |
+| `14b_tablas_derechos_privacidad.sql`            | Solicitudes ARCO, verificaciones, resoluciones y ejecución.                                        |
+| `14c_tablas_moderacion_auditoria.sql`           | Sanciones, correcciones y bitácora administrativa.                                                 |
+| `15_tablas_soportes.sql`                        | Idempotencia, tareas y controles de eliminación.                                                   |
+| `20_claves_y_relaciones.sql`                    | Claves únicas y relaciones entre tablas ya creadas.                                                |
+| `21_restricciones.sql`                          | Rangos y combinaciones válidas de estados, fechas e importes.                                      |
+| `22_indices.sql`                                | Índices de consulta y unicidad condicional.                                                        |
+| `30_funciones_contexto_auditoria.sql`           | Contexto transaccional y captura de auditoría sin copiar PII.                                      |
+| `31_funciones_proteccion.sql`                   | Protección de históricos, roles y estructura utilizada.                                            |
+| `32_funciones_integridad_diferida.sql`          | Reglas que se comprueban al completar la transacción.                                              |
+| `40_triggers.sql`                               | Asociar las funciones a los eventos de las tablas.                                                 |
+| `50_permisos.sql`                               | Permisos de aplicación y mantenimiento.                                                            |
+| `60_datos_base.sql`                             | Cinco estados técnicos de tareas; sin cuentas ni textos legales ficticios.                         |
+| `manifest.json`                                 | Orden y huellas SHA-256 de los archivos de la migración.                                           |
+| `fixtures/00_datos_prueba.sql`                  | Datos ficticios aislados; nunca se cargan al instalar.                                             |
+| `tests/`                                        | Pruebas, dependencias e informe de la comprobación realizada.                                      |
+| `docs/responsabilidades_backend.md`             | Reglas que debe completar el backend y la infraestructura.                                         |
 
 Los nombres abreviados de la tabla anterior están dentro de `migrations/0001_inicial/`. Las tablas se separan por módulo; claves, funciones y triggers se separan por responsabilidad. Evitamos un archivo por tabla porque añadiría navegación sin aportar claridad suficiente.
 
@@ -75,6 +75,10 @@ python tests/ejecutar.py
 La suite rechaza bases con otro prefijo o con cuentas existentes. Carga sus fixtures y deja datos de prueba en esa base desechable. El caso de instalación fallida crea y elimina únicamente su propia base temporal. Resultado registrado: **34 pruebas, 0 fallos y 0 errores en PostgreSQL 18.6**. Ver `tests/informe_pruebas.md` para el alcance exacto.
 
 ## Integración con el contrato
+
+### Repositorios TypeScript del flujo jugable
+
+La [entrega de persistencia para Rafael](../docs/architecture/flujo-jugable-persistencia.md) implementa los repositorios sobre esta migración, sin modificar sus archivos. La suite adicional `npm run test:persistence` utiliza un login de aplicación limitado y el fixture independiente `fixtures/01_flujo_jugable.sql` en una base local desechable. Su preparación y carácter destructivo están detallados en esa guía; no sustituye `tests/ejecutar.py` ni se ejecuta contra RDS. Ver el [informe de persistencia](tests/informe_persistencia_juego.md).
 
 Compatible con el [contrato OpenAPI](../docs/openapi/criterika_openapi_v1.yaml), versión 1.0.2. Se añadió al contrato el motivo de finalización `PRIVACIDAD`, que ya corresponde a la cancelación por restricciones de tratamiento acordada. No se agregaron rutas.
 

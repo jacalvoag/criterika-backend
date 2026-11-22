@@ -6,6 +6,7 @@ import {
 import type { ApplicationSettings } from '../config/environment.js';
 import { createPostgresPool, POSTGRES_POOL } from './postgres.pool.js';
 import { PostgresService } from './postgres.service.js';
+import { TransactionRunner } from './transaction-runner.js';
 
 @Module({
   imports: [ApplicationConfigModule],
@@ -17,7 +18,8 @@ import { PostgresService } from './postgres.service.js';
         createPostgresPool(settings.database),
     },
     PostgresService,
+    TransactionRunner,
   ],
-  exports: [POSTGRES_POOL, PostgresService],
+  exports: [POSTGRES_POOL, PostgresService, TransactionRunner],
 })
 export class PostgresModule {}

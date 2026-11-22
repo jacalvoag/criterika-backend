@@ -8,6 +8,7 @@ API de Criterika, una aplicación educativa gamificada con niveles, minijuegos, 
 - Contrato OpenAPI 3.1, versión funcional **1.0.2**.
 - Modelos conceptual y lógico, y migración PostgreSQL modular disponibles.
 - Conexión PostgreSQL con configuración validada, pool, comprobación al arrancar y cierre ordenado.
+- Transacciones, idempotencia y repositorios SQL del primer flujo jugable, con pruebas de persistencia reales. Ver [la entrega para integración](docs/architecture/flujo-jugable-persistencia.md).
 - Los módulos funcionales de registro, autenticación, juego y privacidad todavía están pendientes.
 
 La existencia del contrato y de las tablas no significa que sus endpoints, procesos de privacidad o controles de infraestructura estén implementados.
@@ -38,21 +39,21 @@ Las pruebas del backend se ejecutan con Vitest. Las pruebas PostgreSQL tienen su
 
 ## Documentación y base de datos
 
-| Ubicación | Contenido |
-| --- | --- |
-| [docs/README.md](docs/README.md) | Índice de documentos y orden de lectura. |
-| [docs/openapi/](docs/openapi/) | Contrato OpenAPI y guía de revisión. |
-| [docs/database/](docs/database/) | Modelos conceptual y lógico vigentes. |
-| [docs/decisions/](docs/decisions/) | Decisiones de trabajo y fuentes vigentes. |
-| [docs/architecture/backend.md](docs/architecture/backend.md) | Arquitectura, dependencias, transacciones y acuerdo del primer flujo de registro. |
-| [docs/team/responsabilidades.md](docs/team/responsabilidades.md) | Áreas de José, Uzzi y Rafael, propiedad de archivos y protocolo de integración. |
-| [docs/team/criterika_coordinacion_equipo.json](docs/team/criterika_coordinacion_equipo.json) | Guía compartible del desarrollo, responsabilidades, commits, ramas y coordinación. |
-| [database/README.md](database/README.md) | Organización y aplicación de los SQL. |
-| [database/migrations/](database/migrations/) | Cambios versionados de PostgreSQL. |
-| [database/docs/responsabilidades_backend.md](database/docs/responsabilidades_backend.md) | Responsabilidades de los servicios y del entorno. |
-| [database/tests/informe_pruebas.md](database/tests/informe_pruebas.md) | Informe previo de 34 pruebas SQL correctas en PostgreSQL 18.6; no son pruebas HTTP del backend. |
-| [docs/development/postgresql.md](docs/development/postgresql.md) | Configuración local o remota, login técnico y diagnóstico de conexión. |
-| [docs/development/verificacion_postgresql.md](docs/development/verificacion_postgresql.md) | Resultados y límites de la comprobación del backend con PostgreSQL. |
+| Ubicación                                                                                    | Contenido                                                                                       |
+| -------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| [docs/README.md](docs/README.md)                                                             | Índice de documentos y orden de lectura.                                                        |
+| [docs/openapi/](docs/openapi/)                                                               | Contrato OpenAPI y guía de revisión.                                                            |
+| [docs/database/](docs/database/)                                                             | Modelos conceptual y lógico vigentes.                                                           |
+| [docs/decisions/](docs/decisions/)                                                           | Decisiones de trabajo y fuentes vigentes.                                                       |
+| [docs/architecture/backend.md](docs/architecture/backend.md)                                 | Arquitectura, dependencias, transacciones y acuerdo del primer flujo de registro.               |
+| [docs/team/responsabilidades.md](docs/team/responsabilidades.md)                             | Áreas de José, Uzzi y Rafael, propiedad de archivos y protocolo de integración.                 |
+| [docs/team/criterika_coordinacion_equipo.json](docs/team/criterika_coordinacion_equipo.json) | Guía compartible del desarrollo, responsabilidades, commits, ramas y coordinación.              |
+| [database/README.md](database/README.md)                                                     | Organización y aplicación de los SQL.                                                           |
+| [database/migrations/](database/migrations/)                                                 | Cambios versionados de PostgreSQL.                                                              |
+| [database/docs/responsabilidades_backend.md](database/docs/responsabilidades_backend.md)     | Responsabilidades de los servicios y del entorno.                                               |
+| [database/tests/informe_pruebas.md](database/tests/informe_pruebas.md)                       | Informe previo de 34 pruebas SQL correctas en PostgreSQL 18.6; no son pruebas HTTP del backend. |
+| [docs/development/postgresql.md](docs/development/postgresql.md)                             | Configuración local o remota, login técnico y diagnóstico de conexión.                          |
+| [docs/development/verificacion_postgresql.md](docs/development/verificacion_postgresql.md)   | Resultados y límites de la comprobación del backend con PostgreSQL.                             |
 
 El esquema SQL se conserva como archivos independientes. Para instalarlo, seguir las instrucciones de `database/README.md`; no ejecutar los archivos por separado ni cargar los fixtures en una base real.
 

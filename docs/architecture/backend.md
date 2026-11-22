@@ -8,11 +8,11 @@ Se utiliza un monolito modular NestJS: una aplicación HTTP, una base PostgreSQL
 
 Cada funcionalidad agrupa su controlador, DTO, servicios, contratos internos, repositorios y pruebas. La complejidad se añade cuando existe una operación que la necesita. Se pueden conservar los actuales `src/config/` y `src/database/`.
 
-| Responsabilidad | Contenido | Límite |
-| --- | --- | --- |
-| Controlador y DTO | HTTP, parámetros, headers, validación estructural y representación de respuestas | Delega las decisiones de negocio. La identidad no procede del cuerpo. |
-| Servicio | Reglas, permisos del caso, coordinación y resultado de la operación | No contiene SQL ni usa Request/Response de Express para sus reglas. |
-| Repositorio | SQL parametrizado, relaciones, bloqueos, conversión de filas y conflictos de persistencia | Utiliza la conexión transaccional recibida; no confirma por su cuenta. |
+| Responsabilidad       | Contenido                                                                                     | Límite                                                                          |
+| --------------------- | --------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| Controlador y DTO     | HTTP, parámetros, headers, validación estructural y representación de respuestas              | Delega las decisiones de negocio. La identidad no procede del cuerpo.           |
+| Servicio              | Reglas, permisos del caso, coordinación y resultado de la operación                           | No contiene SQL ni usa Request/Response de Express para sus reglas.             |
+| Repositorio           | SQL parametrizado, relaciones, bloqueos, conversión de filas y conflictos de persistencia     | Utiliza la conexión transaccional recibida; no confirma por su cuenta.          |
 | Infraestructura común | Configuración, pool, transacciones, correlación, errores, idempotencia y adaptadores técnicos | Exporta capacidades concretas y mantiene los secretos fuera de respuestas/logs. |
 
 Un servicio puede coordinar una operación completa y utilizar funciones puras para cálculos o evaluación. Se extrae otro servicio cuando tenga una responsabilidad sustancial propia. Las interfaces se emplean para los acuerdos que necesitan José y los responsables funcionales o para un proveedor externo; no se exige una interfaz para cada clase ni un repositorio genérico.
@@ -21,23 +21,23 @@ Un servicio puede coordinar una operación completa y utilizar funciones puras p
 
 La tabla describe dependencias permitidas entre capacidades. Todas pueden usar infraestructura común; esa dependencia técnica se omite para facilitar la lectura. Cada módulo exporta solo sus servicios públicos necesarios. Los repositorios permanecen internos.
 
-| Capacidad prevista | Responsable funcional | Puede consumir estas capacidades |
-| --- | --- | --- |
-| `security` | Uzzi | Infraestructura; verifica sesión, rol y confirmación reciente, sin importar módulos de negocio. |
-| `minigames` | Rafael | Tipos y funciones puras propias; sin HTTP, SQL o identidad. |
-| `media` | Uzzi | `security` y adaptador técnico de almacenamiento. |
-| `legal` | Uzzi | `security` para administración; versiones, finalidades y aceptación son propias. |
-| `accounts` | Uzzi | `security`, `media`. Expone perfil y estado mínimo de acceso. |
-| `auth` | Uzzi | `security`, `accounts`, `legal`. Registro y acceso no importan el flujo de juego. |
-| `content` | Rafael | `security`, `media`, `minigames`. Borradores, publicación y definiciones compartidas. |
-| `economy` | Rafael | `security`, `accounts`, `legal`, `content`. Saldos, vidas, XP, racha, compras y beneficio de evoluciones. |
-| `collection` | Rafael | `security`, `content`, `economy`. Consulta/adquisición de cartas; las compras se delegan a economía. |
-| `dictionary` | Rafael | `security`, `content`. Consulta y concesión de términos propios. |
-| `gameplay` | Rafael | `security`, `accounts`, `legal`, `content`, `minigames`, `economy`, `collection`, `dictionary`. Coordina intentos y resultados. |
-| `audit` | José | `security`. Consulta de bitácora y evidencia explícita de accesos administrativos. |
-| `moderation` | Uzzi | `security`, `accounts`, `gameplay`, `economy`, `audit`. Sanciones y resolución de casos. |
-| `privacy` | Uzzi | `security`, `accounts`, `auth`, `legal`, `media`, `gameplay`, `economy`, `collection`, `dictionary`, `audit`. Coordina derechos y ejecución. |
-| `system` | José | Infraestructura y `security` para el estado administrativo del mantenimiento. |
+| Capacidad prevista | Responsable funcional | Puede consumir estas capacidades                                                                                                             |
+| ------------------ | --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `security`         | Uzzi                  | Infraestructura; verifica sesión, rol y confirmación reciente, sin importar módulos de negocio.                                              |
+| `minigames`        | Rafael                | Tipos y funciones puras propias; sin HTTP, SQL o identidad.                                                                                  |
+| `media`            | Uzzi                  | `security` y adaptador técnico de almacenamiento.                                                                                            |
+| `legal`            | Uzzi                  | `security` para administración; versiones, finalidades y aceptación son propias.                                                             |
+| `accounts`         | Uzzi                  | `security`, `media`. Expone perfil y estado mínimo de acceso.                                                                                |
+| `auth`             | Uzzi                  | `security`, `accounts`, `legal`. Registro y acceso no importan el flujo de juego.                                                            |
+| `content`          | Rafael                | `security`, `media`, `minigames`. Borradores, publicación y definiciones compartidas.                                                        |
+| `economy`          | Rafael                | `security`, `accounts`, `legal`, `content`. Saldos, vidas, XP, racha, compras y beneficio de evoluciones.                                    |
+| `collection`       | Rafael                | `security`, `content`, `economy`. Consulta/adquisición de cartas; las compras se delegan a economía.                                         |
+| `dictionary`       | Rafael                | `security`, `content`. Consulta y concesión de términos propios.                                                                             |
+| `gameplay`         | Rafael                | `security`, `accounts`, `legal`, `content`, `minigames`, `economy`, `collection`, `dictionary`. Coordina intentos y resultados.              |
+| `audit`            | José                  | `security`. Consulta de bitácora y evidencia explícita de accesos administrativos.                                                           |
+| `moderation`       | Uzzi                  | `security`, `accounts`, `gameplay`, `economy`, `audit`. Sanciones y resolución de casos.                                                     |
+| `privacy`          | Uzzi                  | `security`, `accounts`, `auth`, `legal`, `media`, `gameplay`, `economy`, `collection`, `dictionary`, `audit`. Coordina derechos y ejecución. |
+| `system`           | José                  | Infraestructura y `security` para el estado administrativo del mantenimiento.                                                                |
 
 Son límites de capacidades, no una orden de generar todas las carpetas ahora. Cuando se implementen, los nombres de módulo corresponden al reparto. `AppModule`, mantenido por José, compone las funcionalidades disponibles. Los servicios de negocio se comparten mediante imports/exports explícitos.
 
@@ -49,27 +49,27 @@ Los guards comunes verifican identidad y acceso de rol. El servicio decide el pe
 
 José conserva toda la persistencia y el esquema. El propietario funcional define la regla; el repositorio de José materializa su lectura o escritura. Las consultas pueden unir tablas para construir una vista autorizada; eso no habilita a un servicio a saltarse las capacidades públicas de otra funcionalidad.
 
-| Información | Regla funcional y coordinación |
-| --- | --- |
-| Perfil e identidad | `accounts`; `auth` coordina el alta mediante su capacidad pública. |
-| Documentos, finalidades y aceptaciones | `legal`; registro conserva la evidencia original y la vincula al crear la cuenta. |
-| Sesiones y credenciales temporales | `security`/`auth`, según el propósito; SQL de José. |
-| Definiciones y revisiones publicadas | `content`; las ejecuciones usan su revisión fijada. |
-| Intentos, ejecuciones, interacciones y primera aprobación | `gameplay`. |
-| Contadores de `estados_jugador` y movimientos económicos | `economy` coordina las modificaciones posteriores al alta, incluida la racha. `gameplay` le comunica el resultado dentro de la transacción. |
-| Creación inicial de `estados_jugador` | Parte del alta atómica de `accounts`: cinco vidas y valores iniciales del contrato, revisados por Rafael. No necesita un servicio de juego para registrar una cuenta. |
-| Adquisición de carta base y términos | `collection` y `dictionary`; `gameplay` solicita las concesiones en su transacción. |
-| Compra de una evolución | `economy` confirma gasto, movimiento y evolución adquirida; `collection` utiliza esa capacidad. |
-| Trámite y pasos ARCO | `privacy`; el ejecutor técnico de José opera las purgas y controles de restauración con credencial separada. |
-| Auditoría | Triggers de José para escrituras administrativas y capacidad explícita de `audit` para accesos que deban dejar evidencia. |
+| Información                                               | Regla funcional y coordinación                                                                                                                                        |
+| --------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Perfil e identidad                                        | `accounts`; `auth` coordina el alta mediante su capacidad pública.                                                                                                    |
+| Documentos, finalidades y aceptaciones                    | `legal`; registro conserva la evidencia original y la vincula al crear la cuenta.                                                                                     |
+| Sesiones y credenciales temporales                        | `security`/`auth`, según el propósito; SQL de José.                                                                                                                   |
+| Definiciones y revisiones publicadas                      | `content`; las ejecuciones usan su revisión fijada.                                                                                                                   |
+| Intentos, ejecuciones, interacciones y primera aprobación | `gameplay`.                                                                                                                                                           |
+| Contadores de `estados_jugador` y movimientos económicos  | `economy` coordina las modificaciones posteriores al alta, incluida la racha. `gameplay` le comunica el resultado dentro de la transacción.                           |
+| Creación inicial de `estados_jugador`                     | Parte del alta atómica de `accounts`: cinco vidas y valores iniciales del contrato, revisados por Rafael. No necesita un servicio de juego para registrar una cuenta. |
+| Adquisición de carta base y términos                      | `collection` y `dictionary`; `gameplay` solicita las concesiones en su transacción.                                                                                   |
+| Compra de una evolución                                   | `economy` confirma gasto, movimiento y evolución adquirida; `collection` utiliza esa capacidad.                                                                       |
+| Trámite y pasos ARCO                                      | `privacy`; el ejecutor técnico de José opera las purgas y controles de restauración con credencial separada.                                                          |
+| Auditoría                                                 | Triggers de José para escrituras administrativas y capacidad explícita de `audit` para accesos que deban dejar evidencia.                                             |
 
 El alta inicial y la ejecución técnica de una supresión son coordinaciones expresas; no justifican que todos los servicios editen cualquier tabla. Antes de agregar una escritura se identifica su propietario funcional y el repositorio que la implementará.
 
 ## Transacciones
 
-José implementará una capacidad pequeña `TransactionRunner`: reserva un cliente del pool, ejecuta `BEGIN`, establece `criterika.establecer_contexto`, entrega ese mismo `PoolClient` al coordinador y confirma o revierte. Devuelve siempre la conexión y descarta una conexión dañada. Un `PoolClient` explícito como argumento es suficiente para este proyecto; no se introduce un framework de unidad de trabajo ni propagación transaccional oculta.
+`TransactionRunner`, implementado en `src/database/transaction-runner.ts` y exportado por `PostgresModule`, reserva un cliente del pool, ejecuta `BEGIN`, establece `criterika.establecer_contexto`, entrega ese mismo `PoolClient` al coordinador y confirma o revierte. Devuelve siempre la conexión y descarta una conexión dañada. Un `PoolClient` explícito como argumento es suficiente para este proyecto; no se introduce un framework de unidad de trabajo ni propagación transaccional oculta.
 
-El coordinador funcional decide el conjunto atómico. Las capacidades participantes reciben el mismo cliente, sin `pool.query`, `COMMIT` propio ni transacciones anidadas independientes. El aislamiento inicial es READ COMMITTED con bloqueos explícitos, conforme al modelo lógico.
+El coordinador funcional decide el conjunto atómico. Las capacidades participantes reciben el mismo cliente, sin `pool.query`, `COMMIT` propio ni transacciones anidadas independientes. Los comandos usan READ COMMITTED con bloqueos explícitos, conforme al modelo lógico. Las vistas compuestas usan `TransactionRunner.read` con REPEATABLE READ READ ONLY para conservar una misma instantánea entre consultas.
 
 Se conserva el orden de bloqueo acordado: cuenta, estado, intento y actividad/ejecución; recursos del mismo tipo en orden estable. El contenido se bloquea como unidad/nivel. Registro bloquea su pendiente y código, y las versiones legales pertinentes, antes de crear recursos nuevos; no puede bloquear una cuenta que todavía no existe. Las implementaciones de purga y recuperación respetan los mismos recursos y comprueban sus concurrencias.
 
@@ -81,12 +81,12 @@ Los reintentos técnicos de deadlock o conflicto transitorio serán acotados, co
 
 ## Flujos que cruzan capacidades
 
-| Caso | Coordinador | Confirmación conjunta |
-| --- | --- | --- |
-| Registro verificado | Servicio de registro de Uzzi | Cuenta, estado inicial, aceptación original, consumo de código, marca del pendiente, sesión y recuperación idempotente. Ver [acuerdo de registro](registro.md). |
-| Aprobación de nivel | Servicio de cierre de intento de Rafael | Resultado e interacción; aprobación única; gemas, XP, racha, vida y concesiones aplicables. Una repetición no duplica el premio inicial. |
-| Compra/evolución | Servicio de compra de Rafael | Regeneración/reserva comprobadas, saldo, recibo, movimiento y beneficio completo. |
-| Cancelación de cuenta | Servicio de privacidad de Uzzi | Admisión/restricción, revocación y cancelación de intento sin consumo; posteriormente pasos de supresión confirmables ejecutados por José. |
+| Caso                  | Coordinador                             | Confirmación conjunta                                                                                                                                           |
+| --------------------- | --------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Registro verificado   | Servicio de registro de Uzzi            | Cuenta, estado inicial, aceptación original, consumo de código, marca del pendiente, sesión y recuperación idempotente. Ver [acuerdo de registro](registro.md). |
+| Aprobación de nivel   | Servicio de cierre de intento de Rafael | Resultado e interacción; aprobación única; gemas, XP, racha, vida y concesiones aplicables. Una repetición no duplica el premio inicial.                        |
+| Compra/evolución      | Servicio de compra de Rafael            | Regeneración/reserva comprobadas, saldo, recibo, movimiento y beneficio completo.                                                                               |
+| Cancelación de cuenta | Servicio de privacidad de Uzzi          | Admisión/restricción, revocación y cancelación de intento sin consumo; posteriormente pasos de supresión confirmables ejecutados por José.                      |
 
 Para cancelar una cuenta no se presenta como atómico lo que sucede en PostgreSQL y en proveedores externos. El trámite persiste su avance y solo se marca completado cuando termina lo requerido. El control mínimo de eliminación tiene una copia protegida fuera del respaldo restaurable; las eliminaciones se reaplican antes de habilitar una restauración. Son procedimientos pendientes de implementación y prueba, no garantías producidas por este documento.
 
@@ -115,6 +115,6 @@ No se generan carpetas vacías, capas de mapeo sin uso ni clases por cada métod
 4. Las firmas del primer flujo permiten que José prepare persistencia y Uzzi servicios sin inventar otra base o cambiar HTTP.
 5. Las capacidades futuras se prueban primero de forma aislada y después con persistencia y seguridad reales. Una firma o una prueba con dobles no acredita integración terminada.
 
-La siguiente entrega técnica, después de revisar este acuerdo, es preparar RDS y la infraestructura transaccional/repositorios del primer flujo. El desarrollo de reglas puras de Rafael puede continuar de forma independiente.
+La conexión a RDS y la infraestructura transaccional/repositorios del primer flujo jugable están comprobadas con los alcances de sus respectivos informes. La [entrega de persistencia del juego](flujo-jugable-persistencia.md) identifica métodos y dependencias funcionales. Registro, seguridad y endpoints conservan su propio proceso de implementación e integración; disponer de SQL no los completa automáticamente.
 
 Referencias técnicas: [módulos NestJS](https://docs.nestjs.com/modules), [proveedores personalizados](https://docs.nestjs.com/fundamentals/custom-providers) y [transacciones de node-postgres](https://node-postgres.com/features/transactions).
