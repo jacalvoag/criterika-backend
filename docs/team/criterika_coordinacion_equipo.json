@@ -5,11 +5,7 @@
     "fecha_local": "2026-11-15",
     "zona_horaria": "America/Mexico_City",
     "idioma": "es-MX",
-    "destinatarios": [
-      "José",
-      "Uzzi",
-      "Rafael"
-    ],
+    "destinatarios": ["José", "Uzzi", "Rafael"],
     "coordinador": "José",
     "naturaleza": "Guía compartible de trabajo; no es configuración ejecutable ni prueba de funcionalidades implementadas.",
     "repositorio": "https://github.com/jacalvoag/criterika-backend",
@@ -33,10 +29,7 @@
   "contexto_producto": {
     "descripcion": "Backend de una aplicación educativa gamificada con niveles, minijuegos, vidas, gemas, progreso y cartas evolucionables.",
     "alcance_reparto": "API NestJS, persistencia, base de datos e infraestructura común. Las vistas móvil y web requieren su reparto antes de desarrollarse.",
-    "roles_aplicacion": [
-      "JUGADOR",
-      "ADMINISTRADOR"
-    ],
+    "roles_aplicacion": ["JUGADOR", "ADMINISTRADOR"],
     "administradores": "Tres cuentas individuales predefinidas, provisionadas de forma controlada; los nombres del equipo no crean cuentas de aplicación.",
     "criterio_aceptacion": "Funciona, respeta el contrato, puede sostenerse y no deja inconsistencias conocidas sin resolver. La perfección no es un objetivo.",
     "modelos_descartados": "Los modelos antiguos de BD descartados no son fuentes vigentes; usar los nuevos modelos y las migraciones actuales."
@@ -151,10 +144,7 @@
       "Las consultas pueden unir tablas mediante repositorios de José; un servicio no escribe SQL ajeno para saltarse un límite.",
       "src/ nunca importa desde docs/. Trasladar las firmas documentales al implementar y evitar dos fuentes divergentes."
     ],
-    "fuentes": [
-      "docs/architecture/backend.md",
-      "docs/architecture/registro.md"
-    ]
+    "fuentes": ["docs/architecture/backend.md", "docs/architecture/registro.md"]
   },
   "responsabilidades": {
     "jose": {
@@ -306,11 +296,7 @@
       }
     ],
     "evoluciones": {
-      "costes_gemas": [
-        150,
-        350,
-        500
-      ],
+      "costes_gemas": [150, 350, 500],
       "orden": "Secuencial; carta con base y tres etapas antes de publicar."
     },
     "retroalimentacion": "Preguntas con feedback inmediato; aprobación al superar todas las actividades.",
@@ -403,8 +389,17 @@
     "fuentes": [
       "database/README.md",
       "docs/architecture/backend.md",
-      "docs/architecture/registration-contracts.ts"
-    ]
+      "docs/architecture/registration-contracts.ts",
+      "docs/architecture/flujo-jugable-persistencia.md"
+    ],
+    "entrega_flujo_jugable": {
+      "propietario": "José",
+      "contenido": "TransactionRunner, idempotencia de inicio/abandono, repositorios SQL y pruebas de persistencia de las ocho operaciones solicitadas por Rafael.",
+      "integracion": "Rafael compone servicios, valida JSON por tipo y proyecta DTO sin soluciones. Uzzi proporciona las capacidades públicas de identidad/acceso. Los repositorios permanecen internos a sus módulos.",
+      "alcance": "La entrega y sus pruebas SQL no acreditan los endpoints, el registro, la autorización HTTP ni un monitor programado.",
+      "lecturas": "REPEATABLE READ READ ONLY para vistas compuestas; comandos READ COMMITTED con bloqueos explícitos.",
+      "detalle": "docs/architecture/flujo-jugable-persistencia.md"
+    }
   },
   "git": {
     "base_tareas": "develop",
@@ -447,14 +442,7 @@
       "criterio": "Un propósito entendible y coherente por commit; código y pruebas necesarias pueden ir juntos.",
       "tamanio": "El suficiente para revisar y explicar el cambio; sin cuota de líneas, archivos o número de commits.",
       "mensaje": "En español y con un cambio concreto. Usar tipo(alcance): descripción para mantener consistencia.",
-      "tipos": [
-        "feat",
-        "fix",
-        "test",
-        "docs",
-        "refactor",
-        "chore"
-      ],
+      "tipos": ["feat", "fix", "test", "docs", "refactor", "chore"],
       "ejemplos_validos": [
         "feat(database): agrega contexto de las transacciones",
         "feat(auth): persiste registros pendientes y códigos",

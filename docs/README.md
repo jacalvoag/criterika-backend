@@ -26,6 +26,7 @@ Los archivos terminados en `v1` conservan su nombre; la revisión puntual del co
 - [Arquitectura del backend](architecture/backend.md): módulos, dependencias y coordinación transaccional.
 - [Primer flujo de registro](architecture/registro.md): secuencia, firmas, persistencia y criterios de aceptación.
 - [Firmas TypeScript de registro](architecture/registration-contracts.ts): acuerdos compilables, sin implementación de endpoints.
+- [Persistencia del primer flujo jugable](architecture/flujo-jugable-persistencia.md): repositorios implementados, decisiones para Rafael, dependencias funcionales y pruebas de integración SQL.
 
 ## Guía compartible del equipo
 
