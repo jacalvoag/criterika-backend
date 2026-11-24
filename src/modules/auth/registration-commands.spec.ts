@@ -1,11 +1,14 @@
 import type { PoolClient } from 'pg';
+import type { RegistrationAccountService } from '../accounts/registration-account.service.js';
 import type { RegistrationLegalService } from '../legal/registration-legal.service.js';
+import type { RegistrationPlayerSessionsService } from '../security/registration-player-sessions.service.js';
 import {
   createRegistrationCodeVerifier,
   verifyRegistrationCode,
 } from '../security/registration-code.js';
 import {
   RegistrationCommands,
+  type RegistrationChallengeProtection,
   type RegistrationRepository,
 } from './registration-commands.js';
 
@@ -13,6 +16,7 @@ const tx = {} as PoolClient;
 const now = new Date('2026-11-23T19:05:00Z');
 const registrationId = 'af72d98a-234c-4c46-82d0-4e2fca67ca28';
 const challengeId = '9f8b559c-cd87-41d3-8017-52e376ca4190';
+const sessionId = '880113ab-a5d9-48f3-b190-aa91eae352f9';
 const verifierKey = new Uint8Array(32).fill(42);
 const input = {
   normalizedEmail: 'ana@example.invalid',
@@ -77,25 +81,74 @@ function setup() {
     invalidatePreviousCodes: vi
       .fn<RegistrationRepository['invalidatePreviousCodes']>()
       .mockResolvedValue(undefined),
+    incrementFailedAttempts: vi
+      .fn<RegistrationRepository['incrementFailedAttempts']>()
+      .mockResolvedValue(1),
+    consumeChallenge: vi
+      .fn<RegistrationRepository['consumeChallenge']>()
+      .mockResolvedValue(undefined),
+    markCompleted: vi
+      .fn<RegistrationRepository['markCompleted']>()
+      .mockResolvedValue(undefined),
   };
   const legal = {
     assertCurrentSelection: vi
       .fn<RegistrationLegalService['assertCurrentSelection']>()
       .mockResolvedValue({ ok: true }),
+    recordOriginalAcceptance: vi
+      .fn<RegistrationLegalService['recordOriginalAcceptance']>()
+      .mockResolvedValue('acceptance-id'),
+  };
+  const accounts = {
+    createVerifiedPlayer: vi
+      .fn<RegistrationAccountService['createVerifiedPlayer']>()
+      .mockResolvedValue({
+        kind: 'created',
+        profile: {
+          id: 'new-account',
+          nombre: pending.name,
+          apellidos: pending.surnames,
+          fechaNacimiento: pending.birthDate,
+          correo: pending.normalizedEmail,
+          avatarMediaId: null,
+          estado: 'ACTIVA',
+          suspensionHasta: null,
+          creadaEn: now.toISOString(),
+          version: 1,
+        },
+      }),
+  };
+  const sessions = {
+    issueForNewPlayer: vi
+      .fn<RegistrationPlayerSessionsService['issueForNewPlayer']>()
+      .mockResolvedValue({
+        sessionId,
+        accessToken: 'test-access',
+        refreshToken: 'test-refresh',
+        tokenType: 'Bearer',
+        accessExpiresIn: 900,
+        sessionExpiresAt: new Date('2026-12-23T19:05:00Z'),
+      }),
   };
   const protection = {
     verifierKey,
     protectMail: vi
-      .fn<
-        import('./registration-commands.js').RegistrationChallengeProtection['protectMail']
-      >()
+      .fn<RegistrationChallengeProtection['protectMail']>()
       .mockReturnValue(new Uint8Array([1, 2, 3])),
   };
   return {
     repository,
     legal,
     protection,
-    commands: new RegistrationCommands(repository, legal, protection),
+    accounts,
+    sessions,
+    commands: new RegistrationCommands(
+      repository,
+      legal,
+      protection,
+      accounts,
+      sessions,
+    ),
   };
 }
 
@@ -145,6 +198,110 @@ describe('RegistrationCommands.start', () => {
     expect(protection.protectMail).not.toHaveBeenCalled();
     expect(repository.createPending).not.toHaveBeenCalled();
     expect(repository.createChallenge).not.toHaveBeenCalled();
+  });
+});
+
+describe('RegistrationCommands.verify', () => {
+  it('usa la misma transacción para vincular la aceptación original y emitir la sesión', async () => {
+    const { accounts, commands, legal, repository, sessions } = setup();
+    await expect(
+      commands.verify(tx, registrationId, '001234', () => now),
+    ).resolves.toMatchObject({
+      kind: 'success',
+      value: {
+        sessionId,
+        usuario: { id: 'new-account' },
+        sessionExpiresAt: '2026-12-23T19:05:00.000Z',
+        requiereNuevaAceptacion: false,
+      },
+    });
+    expect(legal.assertCurrentSelection).toHaveBeenCalledBefore(
+      accounts.createVerifiedPlayer,
+    );
+    expect(accounts.createVerifiedPlayer).toHaveBeenCalledExactlyOnceWith(
+      tx,
+      expect.objectContaining({
+        normalizedEmail: pending.normalizedEmail,
+        passwordHash: pending.passwordHash,
+        verifiedAt: now,
+      }),
+    );
+    expect(legal.recordOriginalAcceptance).toHaveBeenCalledExactlyOnceWith(
+      tx,
+      'new-account',
+      pending.acceptance,
+    );
+    expect(repository.consumeChallenge).toHaveBeenCalledExactlyOnceWith(
+      tx,
+      challengeId,
+      now,
+    );
+    expect(repository.markCompleted).toHaveBeenCalledExactlyOnceWith(
+      tx,
+      registrationId,
+      'new-account',
+    );
+    expect(sessions.issueForNewPlayer).toHaveBeenCalledExactlyOnceWith(
+      tx,
+      'new-account',
+      now,
+    );
+  });
+
+  it('espera la escritura del intento incorrecto y devuelve el rechazo sin lanzar', async () => {
+    const { accounts, commands, repository, sessions } = setup();
+    await expect(
+      commands.verify(tx, registrationId, '001235', () => now),
+    ).resolves.toEqual({ kind: 'rejected', code: 'CODE_INVALID' });
+    expect(repository.incrementFailedAttempts).toHaveBeenCalledExactlyOnceWith(
+      tx,
+      challengeId,
+    );
+    expect(repository.consumeChallenge).not.toHaveBeenCalled();
+    expect(accounts.createVerifiedPlayer).not.toHaveBeenCalled();
+    expect(sessions.issueForNewPlayer).not.toHaveBeenCalled();
+  });
+
+  it('exige nueva aceptación cuando cambiaron los documentos sin crear la cuenta', async () => {
+    const { accounts, commands, legal, repository, sessions } = setup();
+    legal.assertCurrentSelection.mockResolvedValue({
+      ok: false,
+      reason: 'LEGAL_VERSION_OUTDATED',
+    });
+    await expect(
+      commands.verify(tx, registrationId, '001234', () => now),
+    ).resolves.toEqual({ kind: 'rejected', code: 'LEGAL_VERSION_OUTDATED' });
+    expect(legal.recordOriginalAcceptance).not.toHaveBeenCalled();
+    expect(repository.consumeChallenge).not.toHaveBeenCalled();
+    expect(accounts.createVerifiedPlayer).not.toHaveBeenCalled();
+    expect(sessions.issueForNewPlayer).not.toHaveBeenCalled();
+  });
+
+  it('devuelve el tiempo hasta el reenvío al agotar intentos sin incrementar el contador', async () => {
+    const { commands, repository } = setup();
+    repository.findLatestChallengeForUpdate.mockResolvedValue({
+      ...oldChallenge,
+      failedAttempts: 5,
+    });
+    await expect(
+      commands.verify(tx, registrationId, '001234', () => now),
+    ).resolves.toEqual({
+      kind: 'rejected',
+      code: 'RATE_LIMITED',
+      retryAfterSeconds: 60,
+    });
+    expect(repository.incrementFailedAttempts).not.toHaveBeenCalled();
+  });
+
+  it('un correo ya ocupado no consume el código ni emite sesión para otra cuenta', async () => {
+    const { accounts, commands, repository, sessions } = setup();
+    accounts.createVerifiedPlayer.mockResolvedValue({ kind: 'email_in_use' });
+    await expect(
+      commands.verify(tx, registrationId, '001234', () => now),
+    ).resolves.toEqual({ kind: 'rejected', code: 'STATE_CONFLICT' });
+    expect(repository.consumeChallenge).not.toHaveBeenCalled();
+    expect(repository.markCompleted).not.toHaveBeenCalled();
+    expect(sessions.issueForNewPlayer).not.toHaveBeenCalled();
   });
 });
 

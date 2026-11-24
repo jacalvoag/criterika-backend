@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { isIP } from 'node:net';
 import type { PoolClient } from 'pg';
+import type { RegistrationAccountService } from '../accounts/registration-account.service.js';
 import type {
   OriginalRegistrationAcceptance,
   RegistrationLegalService,
@@ -9,12 +10,14 @@ import {
   createRegistrationCodeVerifier,
   generateRegistrationCode,
 } from '../security/registration-code.js';
+import type { RegistrationPlayerSessionsService } from '../security/registration-player-sessions.service.js';
 import { canResendRegistrationCode } from './registration-challenge.js';
 import type { RegistrationInput } from './registration-input.js';
 import {
   calculateRegistrationIssuance,
   toRegistrationChallengeResponse,
 } from './registration-issuance.js';
+import { evaluateRegistrationVerification } from './registration-verification.js';
 
 interface NewPendingRegistration {
   registrationId: string;
@@ -70,10 +73,38 @@ export interface RegistrationRepository {
     registrationId: string,
     at: Date,
   ): Promise<void>;
+  incrementFailedAttempts(tx: PoolClient, challengeId: string): Promise<number>;
+  consumeChallenge(
+    tx: PoolClient,
+    challengeId: string,
+    at: Date,
+  ): Promise<void>;
+  markCompleted(
+    tx: PoolClient,
+    registrationId: string,
+    accountId: string,
+  ): Promise<void>;
 }
 
 type ChallengeResponse = ReturnType<typeof toRegistrationChallengeResponse>;
 type MissingOrClosedRegistration = 'RESOURCE_NOT_FOUND' | 'STATE_CONFLICT';
+type VerificationRejection =
+  | MissingOrClosedRegistration
+  | LegalRejection
+  | 'CODE_INVALID'
+  | 'CODE_EXPIRED'
+  | 'RATE_LIMITED';
+
+const verificationRejections = {
+  VALIDATION_FAILED: 'VALIDATION_FAILED',
+  CODE_INVALID: 'CODE_INVALID',
+  CODE_EXPIRED: 'CODE_EXPIRED',
+  CODE_USED: 'CODE_INVALID',
+  REGISTRATION_COMPLETED: 'STATE_CONFLICT',
+  REGISTRATION_EXPIRED: 'CODE_EXPIRED',
+  ATTEMPTS_EXHAUSTED: 'RATE_LIMITED',
+  RESEND_NOT_YET_AVAILABLE: 'RATE_LIMITED',
+} as const satisfies Record<string, VerificationRejection>;
 type LegalRejection =
   | 'LEGAL_CONFIGURATION_MISSING'
   | 'LEGAL_VERSION_OUTDATED'
@@ -104,9 +135,17 @@ export class RegistrationCommands {
     private readonly repository: RegistrationRepository,
     private readonly legal: Pick<
       RegistrationLegalService,
-      'assertCurrentSelection'
+      'assertCurrentSelection' | 'recordOriginalAcceptance'
     >,
     private readonly protection: RegistrationChallengeProtection,
+    private readonly accounts: Pick<
+      RegistrationAccountService,
+      'createVerifiedPlayer'
+    >,
+    private readonly sessions: Pick<
+      RegistrationPlayerSessionsService,
+      'issueForNewPlayer'
+    >,
   ) {}
 
   /** Run only for a new idempotent intention, using the same transaction as its confirmation. */
@@ -182,9 +221,7 @@ export class RegistrationCommands {
         return {
           kind: 'rejected',
           code: 'RATE_LIMITED',
-          retryAfterSeconds: Math.ceil(
-            (challenge.resendAvailableAt.getTime() - now.getTime()) / 1000,
-          ),
+          retryAfterSeconds: secondsUntilResend(challenge, now),
         };
       }
       return { kind: 'rejected', code: 'STATE_CONFLICT' };
@@ -202,6 +239,92 @@ export class RegistrationCommands {
       kind: 'success',
       value: toRegistrationChallengeResponse(registrationId, issuance),
     };
+  }
+
+  /** Run after replay handling; the caller must commit the decision with idempotency. */
+  async verify(
+    tx: PoolClient,
+    registrationId: string,
+    code: string,
+    clock: () => Date,
+  ) {
+    const active = await this.loadChallenge(tx, registrationId);
+    if (active.kind === 'rejected') return active;
+    const { pending, challenge } = active;
+    const now = clock();
+    const decision = evaluateRegistrationVerification({
+      state: toChallengeState(pending, challenge),
+      challengeId: challenge.challengeId,
+      storedVerifier: challenge.verifierHash,
+      key: this.protection.verifierKey,
+      code,
+      now,
+    });
+    if (decision.kind === 'rejected') {
+      if (decision.recordFailedAttempt) {
+        await this.repository.incrementFailedAttempts(
+          tx,
+          challenge.challengeId,
+        );
+      }
+      const rejection = verificationRejections[decision.reason];
+      if (rejection === 'RATE_LIMITED') {
+        return {
+          kind: 'rejected',
+          code: rejection,
+          retryAfterSeconds: secondsUntilResend(challenge, now),
+        } as const;
+      }
+      return {
+        kind: 'rejected',
+        code: rejection,
+      } as const;
+    }
+
+    const selection = await this.legal.assertCurrentSelection(
+      tx,
+      pending.acceptance,
+    );
+    if (!selection.ok) return rejectLegal(selection.reason);
+    const player = await this.accounts.createVerifiedPlayer(tx, {
+      accountId: randomUUID(),
+      normalizedEmail: pending.normalizedEmail,
+      name: pending.name,
+      surnames: pending.surnames,
+      birthDate: pending.birthDate,
+      passwordHash: pending.passwordHash,
+      verifiedAt: now,
+    });
+    if (player.kind === 'email_in_use') {
+      return { kind: 'rejected', code: 'STATE_CONFLICT' } as const;
+    }
+
+    const accountId = player.profile.id;
+    await this.legal.recordOriginalAcceptance(
+      tx,
+      accountId,
+      pending.acceptance,
+    );
+    await this.repository.consumeChallenge(tx, challenge.challengeId, now);
+    await this.repository.markCompleted(tx, registrationId, accountId);
+    const credentials = await this.sessions.issueForNewPlayer(
+      tx,
+      accountId,
+      now,
+    );
+    return {
+      kind: 'success',
+      value: {
+        accessToken: credentials.accessToken,
+        refreshToken: credentials.refreshToken,
+        tokenType: credentials.tokenType,
+        accessExpiresIn: credentials.accessExpiresIn,
+        sessionExpiresAt: credentials.sessionExpiresAt.toISOString(),
+        sessionId: credentials.sessionId,
+        usuario: player.profile,
+        requiereNuevaAceptacion: false,
+      },
+    } as const;
   }
 
   private async loadChallenge(tx: PoolClient, registrationId: string) {
@@ -259,6 +382,16 @@ export class RegistrationCommands {
       resendAvailableAt: issuance.resendAvailableAt,
     };
   }
+}
+
+function secondsUntilResend(
+  challenge: StoredRegistrationChallenge,
+  now: Date,
+): number {
+  return Math.max(
+    1,
+    Math.ceil((challenge.resendAvailableAt.getTime() - now.getTime()) / 1000),
+  );
 }
 
 function toChallengeState(
