@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 
-interface PublishedRegistrationDocument {
+export interface PublishedRegistrationDocument {
   id: string;
   type: 'TERMINOS' | 'AVISO_PRIVACIDAD';
   versionLabel: string;
