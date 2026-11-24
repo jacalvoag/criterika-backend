@@ -31,3 +31,5 @@ Los archivos terminados en `v1` conservan su nombre; la revisión puntual del co
 ## Guía compartible del equipo
 
 [criterika_coordinacion_equipo.json](team/criterika_coordinacion_equipo.json) reúne el contexto vigente al preparar la guía, las responsabilidades, los límites de archivos, la matriz de operaciones y los acuerdos de commits pequeños dentro de una rama por bloque coherente.
+
+- [Persistencia e infraestructura del registro](architecture/registro-persistencia.md).

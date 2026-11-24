@@ -85,3 +85,5 @@ Compatible con el [contrato OpenAPI](../docs/openapi/criterika_openapi_v1.yaml),
 Se conserva el modelo lógico de 53 tablas. `revisiones_nivel.transaccion_creacion` es metadato físico interno para impedir que se agreguen componentes a una revisión fuera de su transacción de creación; no forma parte del DTO público.
 
 Esta entrega establece la base física modular y comprobaciones SQL. La implementación de los servicios, las tareas de privacidad, los respaldos y la configuración del entorno se completan en la etapa de backend.
+
+La [persistencia del registro](../docs/architecture/registro-persistencia.md) utiliza el esquema instalado sin otra migración. Sus pruebas locales incluyen documentos ficticios y los repositorios reales de registro, cuenta, aceptación y sesión.

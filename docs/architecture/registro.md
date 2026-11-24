@@ -2,6 +2,14 @@
 
 Acuerdo entre José (persistencia e infraestructura), Uzzi (coordinación funcional) y Rafael (revisión de valores iniciales de juego). Complementa la [arquitectura](backend.md) y el [reparto](../team/responsabilidades.md). No implementa los endpoints.
 
+## Dependencias de persistencia implementadas
+
+La [entrega de persistencia e infraestructura](registro-persistencia.md) conecta
+las firmas ejecutables de la PR #19 con PostgreSQL, idempotencia pública,
+Argon2id, firma JWT y correo protegido. Incluye el módulo de composición y las
+instrucciones para que Uzzi conecte las rutas. Este acuerdo conserva su descripción
+del flujo; las firmas vigentes están en `src/` y la integración HTTP sigue pendiente.
+
 ## Operaciones y significado del identificador
 
 | Operación del contrato | Resultado |
