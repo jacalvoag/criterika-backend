@@ -59,3 +59,8 @@ pids
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+# Deployment key material; only the explicitly fictitious SMTP test pair is tracked.
+*.pem
+!test/fixtures/smtp/test-only-private.pem
+!test/fixtures/smtp/test-only-certificate.pem
