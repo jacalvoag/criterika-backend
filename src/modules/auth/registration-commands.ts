@@ -9,6 +9,7 @@ import {
   createRegistrationCodeVerifier,
   generateRegistrationCode,
 } from '../security/registration-code.js';
+import { canResendRegistrationCode } from './registration-challenge.js';
 import type { RegistrationInput } from './registration-input.js';
 import {
   calculateRegistrationIssuance,
@@ -38,15 +39,41 @@ interface NewRegistrationChallenge {
   resendAvailableAt: Date;
 }
 
+interface PendingRegistration extends NewPendingRegistration {
+  completedAccountId: string | null;
+}
+
+interface StoredRegistrationChallenge extends Omit<
+  NewRegistrationChallenge,
+  'encryptedMail'
+> {
+  failedAttempts: number;
+  usedAt: Date | null;
+}
+
 export interface RegistrationRepository {
   createPending(tx: PoolClient, input: NewPendingRegistration): Promise<void>;
   createChallenge(
     tx: PoolClient,
     input: NewRegistrationChallenge,
   ): Promise<void>;
+  findPendingForUpdate(
+    tx: PoolClient,
+    registrationId: string,
+  ): Promise<PendingRegistration | null>;
+  findLatestChallengeForUpdate(
+    tx: PoolClient,
+    registrationId: string,
+  ): Promise<StoredRegistrationChallenge | null>;
+  invalidatePreviousCodes(
+    tx: PoolClient,
+    registrationId: string,
+    at: Date,
+  ): Promise<void>;
 }
 
 type ChallengeResponse = ReturnType<typeof toRegistrationChallengeResponse>;
+type MissingOrClosedRegistration = 'RESOURCE_NOT_FOUND' | 'STATE_CONFLICT';
 type LegalRejection =
   | 'LEGAL_CONFIGURATION_MISSING'
   | 'LEGAL_VERSION_OUTDATED'
@@ -131,6 +158,76 @@ export class RegistrationCommands {
     };
   }
 
+  /** Call after handling idempotency, keeping the replacement in the same transaction. */
+  async resend(
+    tx: PoolClient,
+    registrationId: string,
+    clock: () => Date,
+  ): Promise<
+    RegistrationOutcome<
+      ChallengeResponse,
+      MissingOrClosedRegistration | 'RATE_LIMITED'
+    >
+  > {
+    const active = await this.loadChallenge(tx, registrationId);
+    if (active.kind === 'rejected') return active;
+    const { pending, challenge } = active;
+    const now = clock();
+    const canResend = canResendRegistrationCode(
+      toChallengeState(pending, challenge),
+      now,
+    );
+    if (!canResend.ok) {
+      if (canResend.reason === 'RESEND_NOT_YET_AVAILABLE') {
+        return {
+          kind: 'rejected',
+          code: 'RATE_LIMITED',
+          retryAfterSeconds: Math.ceil(
+            (challenge.resendAvailableAt.getTime() - now.getTime()) / 1000,
+          ),
+        };
+      }
+      return { kind: 'rejected', code: 'STATE_CONFLICT' };
+    }
+
+    const issuance = calculateRegistrationIssuance(now, pending.expiresAt);
+    const replacement = this.prepareChallenge(
+      registrationId,
+      pending.normalizedEmail,
+      issuance,
+    );
+    await this.repository.invalidatePreviousCodes(tx, registrationId, now);
+    await this.repository.createChallenge(tx, replacement);
+    return {
+      kind: 'success',
+      value: toRegistrationChallengeResponse(registrationId, issuance),
+    };
+  }
+
+  private async loadChallenge(tx: PoolClient, registrationId: string) {
+    const pending = await this.repository.findPendingForUpdate(
+      tx,
+      registrationId,
+    );
+    if (!pending)
+      return { kind: 'rejected', code: 'RESOURCE_NOT_FOUND' } as const;
+    if (pending.completedAccountId !== null) {
+      return { kind: 'rejected', code: 'STATE_CONFLICT' } as const;
+    }
+    const challenge = await this.repository.findLatestChallengeForUpdate(
+      tx,
+      registrationId,
+    );
+    if (
+      !challenge ||
+      challenge.registrationId !== pending.registrationId ||
+      challenge.destinationEmail !== pending.normalizedEmail
+    ) {
+      throw new Error('El registro no tiene un desafío asociado válido.');
+    }
+    return { kind: 'loaded', pending, challenge } as const;
+  }
+
   private prepareChallenge(
     registrationId: string,
     destinationEmail: string,
@@ -162,6 +259,20 @@ export class RegistrationCommands {
       resendAvailableAt: issuance.resendAvailableAt,
     };
   }
+}
+
+function toChallengeState(
+  pending: PendingRegistration,
+  challenge: StoredRegistrationChallenge,
+) {
+  return {
+    pendingExpiresAt: pending.expiresAt,
+    completed: pending.completedAccountId !== null,
+    codeExpiresAt: challenge.expiresAt,
+    resendAvailableAt: challenge.resendAvailableAt,
+    failedAttempts: challenge.failedAttempts,
+    codeUsed: challenge.usedAt !== null,
+  };
 }
 
 function rejectLegal(reason: LegalRejection | 'INVALID_PURPOSES'): {

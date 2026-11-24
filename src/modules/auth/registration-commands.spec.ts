@@ -1,6 +1,9 @@
 import type { PoolClient } from 'pg';
 import type { RegistrationLegalService } from '../legal/registration-legal.service.js';
-import { verifyRegistrationCode } from '../security/registration-code.js';
+import {
+  createRegistrationCodeVerifier,
+  verifyRegistrationCode,
+} from '../security/registration-code.js';
 import {
   RegistrationCommands,
   type RegistrationRepository,
@@ -8,6 +11,9 @@ import {
 
 const tx = {} as PoolClient;
 const now = new Date('2026-11-23T19:05:00Z');
+const registrationId = 'af72d98a-234c-4c46-82d0-4e2fca67ca28';
+const challengeId = '9f8b559c-cd87-41d3-8017-52e376ca4190';
+const verifierKey = new Uint8Array(32).fill(42);
 const input = {
   normalizedEmail: 'ana@example.invalid',
   name: 'Ana',
@@ -22,6 +28,37 @@ const input = {
   ip: '192.0.2.42',
   passwordHash: '$argon2id$test',
 };
+const pending = {
+  registrationId,
+  normalizedEmail: input.normalizedEmail,
+  name: input.name,
+  surnames: input.surnames,
+  birthDate: input.birthDate,
+  passwordHash: input.passwordHash,
+  acceptance: {
+    ...input.legalSelection,
+    acceptedAt: input.acceptedAt,
+    ip: input.ip,
+  },
+  createdAt: now,
+  expiresAt: new Date('2026-11-24T19:05:00Z'),
+  completedAccountId: null,
+};
+const oldChallenge = {
+  challengeId,
+  registrationId,
+  destinationEmail: input.normalizedEmail,
+  verifierHash: createRegistrationCodeVerifier(
+    verifierKey,
+    challengeId,
+    '001234',
+  ),
+  createdAt: now,
+  expiresAt: new Date('2026-11-23T19:15:00Z'),
+  resendAvailableAt: new Date('2026-11-23T19:06:00Z'),
+  failedAttempts: 0,
+  usedAt: null,
+};
 
 function setup() {
   const repository = {
@@ -31,6 +68,15 @@ function setup() {
     createChallenge: vi
       .fn<RegistrationRepository['createChallenge']>()
       .mockResolvedValue(undefined),
+    findPendingForUpdate: vi
+      .fn<RegistrationRepository['findPendingForUpdate']>()
+      .mockResolvedValue(pending),
+    findLatestChallengeForUpdate: vi
+      .fn<RegistrationRepository['findLatestChallengeForUpdate']>()
+      .mockResolvedValue(oldChallenge),
+    invalidatePreviousCodes: vi
+      .fn<RegistrationRepository['invalidatePreviousCodes']>()
+      .mockResolvedValue(undefined),
   };
   const legal = {
     assertCurrentSelection: vi
@@ -38,7 +84,7 @@ function setup() {
       .mockResolvedValue({ ok: true }),
   };
   const protection = {
-    verifierKey: new Uint8Array(32).fill(42),
+    verifierKey,
     protectMail: vi
       .fn<
         import('./registration-commands.js').RegistrationChallengeProtection['protectMail']
@@ -98,6 +144,55 @@ describe('RegistrationCommands.start', () => {
     });
     expect(protection.protectMail).not.toHaveBeenCalled();
     expect(repository.createPending).not.toHaveBeenCalled();
+    expect(repository.createChallenge).not.toHaveBeenCalled();
+  });
+});
+
+describe('RegistrationCommands.resend', () => {
+  it('toma la hora después de bloquear y reemplaza el desafío sin extender el pendiente', async () => {
+    const { repository, commands } = setup();
+    const reissuedAt = new Date('2026-11-24T19:02:00Z');
+    const clock = vi.fn(() => reissuedAt);
+    await expect(
+      commands.resend(tx, registrationId, clock),
+    ).resolves.toMatchObject({
+      kind: 'success',
+      value: { id: registrationId, expiraEn: '2026-11-24T19:05:00.000Z' },
+    });
+    expect(repository.findPendingForUpdate).toHaveBeenCalledBefore(
+      repository.findLatestChallengeForUpdate,
+    );
+    expect(repository.findLatestChallengeForUpdate).toHaveBeenCalledBefore(
+      clock,
+    );
+    expect(repository.invalidatePreviousCodes).toHaveBeenCalledExactlyOnceWith(
+      tx,
+      registrationId,
+      reissuedAt,
+    );
+    expect(repository.invalidatePreviousCodes).toHaveBeenCalledBefore(
+      repository.createChallenge,
+    );
+    const [client, replacement] = repository.createChallenge.mock.calls[0];
+    expect(client).toBe(tx);
+    expect(replacement.challengeId).not.toBe(challengeId);
+    expect(repository.createPending).not.toHaveBeenCalled();
+  });
+
+  it('devuelve el tiempo de espera y conserva el código cuando el reenvío es prematuro', async () => {
+    const { repository, commands } = setup();
+    await expect(
+      commands.resend(
+        tx,
+        registrationId,
+        () => new Date('2026-11-23T19:05:59.900Z'),
+      ),
+    ).resolves.toEqual({
+      kind: 'rejected',
+      code: 'RATE_LIMITED',
+      retryAfterSeconds: 1,
+    });
+    expect(repository.invalidatePreviousCodes).not.toHaveBeenCalled();
     expect(repository.createChallenge).not.toHaveBeenCalled();
   });
 });
