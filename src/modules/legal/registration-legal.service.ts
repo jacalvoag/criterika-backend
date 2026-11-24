@@ -46,6 +46,12 @@ export class RegistrationLegalService {
       tx,
       current.privacyVersionId,
     );
+    if (
+      terms?.id.toLowerCase() !== current.termsVersionId.toLowerCase() ||
+      privacy?.id.toLowerCase() !== current.privacyVersionId.toLowerCase()
+    ) {
+      return { ok: false, reason: 'LEGAL_CONFIGURATION_MISSING' } as const;
+    }
     return projectCurrentRegistrationDocuments(terms, privacy);
   }
 
@@ -58,6 +64,15 @@ export class RegistrationLegalService {
       return { ok: false, reason: 'LEGAL_CONFIGURATION_MISSING' } as const;
 
     const required = new Set(current.requiredPurposeCodes);
+    const available = new Set(current.purposeCodes);
+    if (
+      required.size === 0 ||
+      required.size !== current.requiredPurposeCodes.length ||
+      available.size !== current.purposeCodes.length ||
+      [...required].some((code) => !available.has(code))
+    ) {
+      return { ok: false, reason: 'LEGAL_CONFIGURATION_MISSING' } as const;
+    }
     return validateRegistrationLegalSelection(selection, {
       termsVersionId: current.termsVersionId,
       privacyVersionId: current.privacyVersionId,

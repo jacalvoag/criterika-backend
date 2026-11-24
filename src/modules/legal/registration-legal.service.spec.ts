@@ -65,4 +65,36 @@ describe('RegistrationLegalService', () => {
       accountId: 'new-account',
     });
   });
+
+  it('rechaza una configuración con finalidades necesarias inconsistentes', async () => {
+    const { repository, service } = setup();
+    repository.getCurrentForShare.mockResolvedValue({
+      ...selection,
+      requiredPurposeCodes: ['cuenta', 'aprendizaje'],
+    });
+    await expect(
+      service.assertCurrentSelection(tx, selection),
+    ).resolves.toEqual({
+      ok: false,
+      reason: 'LEGAL_CONFIGURATION_MISSING',
+    });
+  });
+
+  it('rechaza un documento que no corresponde a la versión vigente seleccionada', async () => {
+    const { repository, service } = setup();
+    repository.getPublishedDocument.mockResolvedValue({
+      id: 'otra-version',
+      type: 'TERMINOS',
+      versionLabel: '1',
+      markdown: 'contenido',
+      sha256: new Uint8Array(32),
+      publishedAt: new Date(),
+      requiresAcceptance: true,
+      purposes: [],
+    });
+    await expect(service.getCurrentDocuments(tx)).resolves.toEqual({
+      ok: false,
+      reason: 'LEGAL_CONFIGURATION_MISSING',
+    });
+  });
 });
