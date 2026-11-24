@@ -123,3 +123,17 @@ export function parseRegistrationInput(
     },
   };
 }
+
+/** Uses the server instant and the agreed calendar policy for registration. */
+export function parseRegistrationInputAt(
+  input: unknown,
+  serverNow: Date,
+): RegistrationInputResult {
+  if (!Number.isFinite(serverNow.getTime())) {
+    throw new RangeError('Fecha del servidor inválida.');
+  }
+  return parseRegistrationInput(input, {
+    serverDate: serverNow.toISOString().slice(0, 10),
+    leapDayAnniversary: 'FEBRUARY_28',
+  });
+}

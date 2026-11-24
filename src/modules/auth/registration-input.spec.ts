@@ -1,4 +1,7 @@
-import { parseRegistrationInput } from './registration-input.js';
+import {
+  parseRegistrationInput,
+  parseRegistrationInputAt,
+} from './registration-input.js';
 
 const policy = {
   serverDate: '2026-02-28',
@@ -20,6 +23,20 @@ const body = {
 };
 
 describe('parseRegistrationInput', () => {
+  it('usa la fecha UTC del servidor y el 28 de febrero para nacidos en día bisiesto', () => {
+    const beforeUtcBirthday = new Date('2026-02-27T23:59:59.999Z');
+    const onUtcBirthday = new Date('2026-02-28T00:00:00.000Z');
+    expect(parseRegistrationInputAt(body, beforeUtcBirthday)).toEqual({
+      ok: false,
+      reason: 'UNDERAGE',
+    });
+    expect(parseRegistrationInputAt(body, onUtcBirthday)).toMatchObject({
+      ok: true,
+    });
+    expect(() => parseRegistrationInputAt(body, new Date('invalid'))).toThrow(
+      RangeError,
+    );
+  });
   it('aplica la política de edad y normaliza sin cambiar la contraseña', () => {
     expect(parseRegistrationInput(body, policy)).toEqual({
       ok: true,
