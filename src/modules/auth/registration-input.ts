@@ -10,7 +10,7 @@ interface RegistrationDatePolicy {
   leapDayAnniversary: LeapDayAnniversary;
 }
 
-interface RegistrationInput {
+export interface RegistrationInput {
   name: string;
   surnames: string;
   birthDate: string;
