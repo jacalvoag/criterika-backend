@@ -109,6 +109,14 @@ describe.skipIf(!integrationEnabled)(
         .send({ codigo: code })
         .expect(409);
       expect(mismatch.body.code).toBe('IDEMPOTENCY_KEY_REUSED');
+      // Four distinct failed intentions leave the fifth and final attempt available.
+      for (let index = 0; index < 3; index += 1) {
+        await api
+          .post(route)
+          .set('Idempotency-Key', randomUUID())
+          .send({ codigo: wrongCode })
+          .expect(401);
+      }
 
       const firstKey = randomUUID();
       const secondKey = randomUUID();
