@@ -39,7 +39,10 @@ describe('validateRegistrationLegalSelection', () => {
   it('compara identificadores UUID sin distinguir mayúsculas', () => {
     expect(
       validateRegistrationLegalSelection(
-        { ...selection, termsVersionId: 'ABCDEF12-3456-4000-8000-123456789ABC' },
+        {
+          ...selection,
+          termsVersionId: 'ABCDEF12-3456-4000-8000-123456789ABC',
+        },
         { ...current, termsVersionId: 'abcdef12-3456-4000-8000-123456789abc' },
       ),
     ).toEqual({ ok: true });
