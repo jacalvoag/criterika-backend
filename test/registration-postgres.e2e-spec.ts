@@ -41,6 +41,8 @@ describe.skipIf(!integrationEnabled)(
 
     it('registra, cuenta un error una sola vez y recupera la sesión tras verificaciones concurrentes', async () => {
       const api = request(app.getHttpServer());
+      const health = await api.get('/api/v1/health').expect(200);
+      expect(health.body.estado).toBe('OK');
       const documents = await api
         .get('/api/v1/legal/documents/current')
         .expect(200);

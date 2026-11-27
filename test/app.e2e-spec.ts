@@ -88,6 +88,14 @@ describe('AppController (e2e)', () => {
       .expect('Hello World!');
   });
 
+  it('activa la disponibilidad pública en la composición real', async () => {
+    const r = await request(app.getHttpServer())
+      .get('/api/v1/health')
+      .expect(200);
+    expect(r.body.estado).toBe('OK');
+    expect(r.headers['cache-control']).toBe('no-store');
+  });
+
   it('activa la consulta legal con el limitador real de registro', async () => {
     await request(app.getHttpServer())
       .get('/api/v1/legal/documents/current')
