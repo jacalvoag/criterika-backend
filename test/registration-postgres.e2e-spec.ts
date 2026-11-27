@@ -3,9 +3,9 @@ import { Mailer } from '@nestjs/mail';
 import type { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import request from 'supertest';
+import { AppModule } from '../src/app.module.js';
 import { RegistrationMailWorker } from '../src/infrastructure/registration/registration-mail-worker.js';
-import { REGISTRATION_RATE_LIMITER } from '../src/modules/auth/registration-http.controller.js';
-import { RegistrationHttpModule } from '../src/modules/auth/registration-http.module.js';
+import { RegistrationUnitOfWork } from '../src/infrastructure/registration/registration-unit-of-work.js';
 
 const integrationEnabled = process.env['REGISTRATION_HTTP_TEST'] === '1';
 
@@ -26,12 +26,7 @@ describe.skipIf(!integrationEnabled)(
         throw new Error('La prueba HTTP requiere una base local desechable.');
       }
       const module = await Test.createTestingModule({
-        imports: [
-          RegistrationHttpModule.register({
-            provide: REGISTRATION_RATE_LIMITER,
-            useValue: { check: async () => ({ allowed: true }) },
-          }),
-        ],
+        imports: [AppModule],
       })
         .overrideProvider(Mailer)
         .useValue({ send })
@@ -64,11 +59,13 @@ describe.skipIf(!integrationEnabled)(
         },
       };
       const startKey = randomUUID();
+      const unitOfWork = vi.spyOn(app.get(RegistrationUnitOfWork), 'execute');
       const start = await api
         .post('/api/v1/auth/registrations')
         .set('Idempotency-Key', startKey)
         .send(input)
         .expect(202);
+      expect(unitOfWork.mock.calls[0][4]).toBe(start.headers['x-request-id']);
       const replayStart = await api
         .post('/api/v1/auth/registrations')
         .set('Idempotency-Key', startKey)

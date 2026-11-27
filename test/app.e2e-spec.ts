@@ -1,9 +1,41 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
+import { INestApplication, Module } from '@nestjs/common';
 import request from 'supertest';
 import { App } from 'supertest/types.js';
 import { AppModule } from './../src/app.module.js';
 import { POSTGRES_POOL } from '../src/database/postgres.pool.js';
+import { PublicRegistrationIdempotency } from '../src/database/public-registration-idempotency.js';
+import { RegistrationPasswords } from '../src/infrastructure/registration/registration-crypto.js';
+import { RegistrationInfrastructureModule } from '../src/infrastructure/registration/registration-infrastructure.module.js';
+import { RegistrationLegalReader } from '../src/infrastructure/registration/registration-legal-reader.js';
+import { RegistrationUnitOfWork } from '../src/infrastructure/registration/registration-unit-of-work.js';
+import { RegistrationCommands } from '../src/modules/auth/registration-commands.js';
+
+@Module({
+  providers: [
+    { provide: RegistrationCommands, useValue: {} },
+    { provide: RegistrationPasswords, useValue: {} },
+    { provide: PublicRegistrationIdempotency, useValue: {} },
+    { provide: RegistrationUnitOfWork, useValue: {} },
+    {
+      provide: RegistrationLegalReader,
+      useValue: {
+        getCurrentDocuments: async () => ({
+          ok: false,
+          reason: 'LEGAL_CONFIGURATION_MISSING',
+        }),
+      },
+    },
+  ],
+  exports: [
+    RegistrationCommands,
+    RegistrationPasswords,
+    PublicRegistrationIdempotency,
+    RegistrationUnitOfWork,
+    RegistrationLegalReader,
+  ],
+})
+class TestRegistrationInfrastructureModule {}
 
 describe('AppController (e2e)', () => {
   let app: INestApplication<App>;
@@ -26,6 +58,8 @@ describe('AppController (e2e)', () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     })
+      .overrideModule(RegistrationInfrastructureModule)
+      .useModule(TestRegistrationInfrastructureModule)
       .overrideProvider(POSTGRES_POOL)
       .useValue({
         query: vi.fn().mockResolvedValue({
@@ -52,6 +86,28 @@ describe('AppController (e2e)', () => {
       .get('/')
       .expect(200)
       .expect('Hello World!');
+  });
+
+  it('activa la consulta legal con el limitador real de registro', async () => {
+    await request(app.getHttpServer())
+      .get('/api/v1/legal/documents/current')
+      .expect(503)
+      .expect('Content-Type', /application\/problem\+json/);
+  });
+
+  it('limita los inicios de registro desde la misma dirección', async () => {
+    for (let attempt = 0; attempt < 5; attempt += 1) {
+      await request(app.getHttpServer())
+        .post('/api/v1/auth/registrations')
+        .send({})
+        .expect(400);
+    }
+    const response = await request(app.getHttpServer())
+      .post('/api/v1/auth/registrations')
+      .send({})
+      .expect(429);
+    expect(response.body.code).toBe('RATE_LIMITED');
+    expect(Number(response.headers['retry-after'])).toBeGreaterThan(0);
   });
 
   afterEach(async () => {

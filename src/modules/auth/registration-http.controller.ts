@@ -16,7 +16,7 @@ import { RegistrationApplication } from './registration-application.js';
 
 export const REGISTRATION_RATE_LIMITER = Symbol('REGISTRATION_RATE_LIMITER');
 
-/** A shared limiter is supplied by the deployment. */
+/** The limiter is supplied by the application composition. */
 export interface RegistrationRateLimiter {
   check(
     ip: string,
@@ -50,8 +50,8 @@ export class RegistrationHttpController {
     @Body() body: unknown,
   ) {
     const acceptedAt = new Date();
-    return this.handle(request, response, 'start', (ip) =>
-      this.application.start(body, key, acceptedAt, ip),
+    return this.handle(request, response, 'start', (ip, requestId) =>
+      this.application.start(body, key, acceptedAt, ip, requestId),
     );
   }
 
@@ -62,8 +62,8 @@ export class RegistrationHttpController {
     @Headers('idempotency-key') key: unknown,
     @Param('registrationId') registrationId: string,
   ) {
-    return this.handle(request, response, 'resend', () =>
-      this.application.resend(registrationId, key),
+    return this.handle(request, response, 'resend', (_ip, requestId) =>
+      this.application.resend(registrationId, key, requestId),
     );
   }
 
@@ -75,8 +75,8 @@ export class RegistrationHttpController {
     @Param('registrationId') registrationId: string,
     @Body() body: unknown,
   ) {
-    return this.handle(request, response, 'verify', () =>
-      this.application.verify(registrationId, key, body),
+    return this.handle(request, response, 'verify', (_ip, requestId) =>
+      this.application.verify(registrationId, key, body, requestId),
     );
   }
 
@@ -84,7 +84,7 @@ export class RegistrationHttpController {
     request: Request,
     response: Response,
     operation: 'documents' | 'start' | 'resend' | 'verify',
-    work: (ip: string) => Promise<ResponseResult>,
+    work: (ip: string, requestId: string) => Promise<ResponseResult>,
   ) {
     const requestId = randomUUID();
     response.setHeader('X-Request-Id', requestId);
@@ -111,7 +111,7 @@ export class RegistrationHttpController {
           },
         });
       }
-      return this.send(response, requestId, await work(ip));
+      return this.send(response, requestId, await work(ip, requestId));
     } catch {
       return this.send(response, requestId, {
         status: 500,
