@@ -23,7 +23,8 @@
     "db:check": "npm run build && node dist/check-database.js",
     "test:persistence": "vitest run --config ./vitest.config.persistence.ts",
     "registration:mail": "npm run build && node dist/send-registration-mail.js",
-    "registration:setup": "npm run build && node dist/prepare-registration.js"
+    "registration:setup": "npm run build && node dist/prepare-registration.js",
+    "registration:check": "npm run build && node dist/check-registration.js"
   },
   "dependencies": {
     "@nestjs/common": "^12.0.1",
