@@ -1,3 +1,4 @@
+import { RegistrationOperationsService } from './registration-operations.service.js';
 import { RegistrationEnvironmentCheck } from './registration-environment-check.js';
 import { RegistrationTransactionLocks } from './registration-transaction-locks.js';
 import { Module } from '@nestjs/common';
@@ -188,6 +189,19 @@ class RegistrationConfigurationModule {}
         new RegistrationEnvironmentCheck(l, s),
     },
     {
+      provide: RegistrationOperationsService,
+      inject: [
+        TransactionRunner,
+        PublicRegistrationIdempotency,
+        RegistrationMailWorker,
+      ],
+      useFactory: (
+        r: TransactionRunner,
+        i: PublicRegistrationIdempotency,
+        w: RegistrationMailWorker,
+      ) => new RegistrationOperationsService(r, i, w),
+    },
+    {
       provide: RegistrationMailWorker,
       inject: [
         POSTGRES_POOL,
@@ -212,6 +226,7 @@ class RegistrationConfigurationModule {}
     RegistrationMailWorker,
     RegistrationConfigurationModule,
     RegistrationEnvironmentCheck,
+    RegistrationOperationsService,
   ],
 })
 export class RegistrationInfrastructureModule {}

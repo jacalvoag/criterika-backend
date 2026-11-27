@@ -11,14 +11,18 @@ export class RegistrationMailWorker {
     private readonly mailer: Pick<Mailer, 'send'>,
   ) {}
   /** Called after commit or by an internal bounded scheduler, never by a public route directly. */
-  async drain(limit = 20, clock: () => Date = () => new Date()) {
+  async drain(
+    limit = 20,
+    clock: () => Date = () => new Date(),
+    signal?: AbortSignal,
+  ) {
     const client = await this.pool.connect();
     let discard = false;
     const counts = { sent: 0, failed: 0, skipped: 0 };
     try {
       const candidates = await this.repository.candidates(client, limit);
       for (const c of candidates) {
-        if (discard) break;
+        if (discard || signal?.aborted) break;
         const lockName = 'criterika:registration-mail:' + c.registrationId;
         const { rows } = await client.query<{ locked: boolean }>(
           'SELECT pg_try_advisory_lock(hashtextextended($1,0)) AS locked',
@@ -50,7 +54,9 @@ export class RegistrationMailWorker {
               text: `Tu código de verificación es ${payload.code}. Vence en ${payload.expiresAt.toISOString()}.`,
               idempotencyKey: c.id,
               retry: false,
-              signal: AbortSignal.timeout(15000),
+              signal: signal
+                ? AbortSignal.any([signal, AbortSignal.timeout(15000)])
+                : AbortSignal.timeout(15000),
             });
           } catch {
             await this.repository.failed(client, c.id);
