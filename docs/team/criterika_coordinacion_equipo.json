@@ -40,13 +40,13 @@
       "Configuración validada, pool pg, comprobación al arrancar, cierre ordenado y npm run db:check.",
       "Contrato OpenAPI 3.1.0, versión funcional 1.0.2, con 142 operaciones, 121 rutas, 184 schemas y 30 escenarios.",
       "Modelos conceptual/lógico y migración inicial modular de 19 SQL; 53 tablas de negocio y 88 FK.",
-      "Reparto del equipo y arquitectura documentados, con firmas de registro sin implementación."
+      "Registro HTTP integrado en develop por PR #20–#22, con repositorios, proveedores criptográficos y límites de solicitudes."
     ],
     "pendiente": [
-      "Configurar RDS de Criterika y verificar región, versión disponible, red, permisos, cifrado, respaldo y TLS positivo real.",
-      "Aplicar migración y provisionar logins técnicos separados de migración, aplicación y mantenimiento.",
-      "Implementar TransactionRunner, idempotencia y protección de respuestas, repositorios y primer flujo funcional.",
-      "Implementar registro, correo, sesiones, autorización, contenido, juego, economía y derechos ARCO.",
+      "Revisar operación actual de RDS y acreditar restauración; la instalación y conexión TLS ya tienen evidencia histórica del equipo.",
+      "Completar operación y supervisión con logins separados; no reaplicar la migración inicial ya instalada.",
+      "Integrar servicios y HTTP de juego sobre TransactionRunner, idempotencia y repositorios ya disponibles.",
+      "Validar registro/correo reales; implementar acceso, renovación, autorización, contenido, juego, economía y derechos ARCO.",
       "Configurar documentos legales y responsable/canal de privacidad reales antes de datos reales.",
       "Implementar/verificar proveedores, depuración, efectos externos, restauración y escenarios del contrato."
     ],
@@ -79,7 +79,7 @@
     "modulos": "ESM; imports relativos terminan en .js.",
     "persistencia": "pg y SQL parametrizado; migraciones SQL como fuente ejecutable del esquema.",
     "motor": "PostgreSQL 18 o superior; referencia probada 18.6.",
-    "alojamiento": "Amazon RDS, aún pendiente de configuración/verificación para Criterika.",
+    "alojamiento": "Amazon RDS PostgreSQL; instalación y TLS acreditados por el equipo en docs/development/verificacion_postgresql.md. No implica nueva verificación operativa.",
     "transporte": "OpenAPI 3.1.0; prefijo /api/v1, rutas en inglés, propiedades en español, enums explícitos.",
     "pruebas": "Vitest y Supertest; no copiar comandos Jest o --runInBand.",
     "herramientas": "Oxlint con análisis de tipos y Prettier, conservando configuración del repositorio.",

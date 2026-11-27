@@ -9,7 +9,9 @@ API de Criterika, una aplicación educativa gamificada con niveles, minijuegos, 
 - Modelos conceptual y lógico, y migración PostgreSQL modular disponibles.
 - Conexión PostgreSQL con configuración validada, pool, comprobación al arrancar y cierre ordenado.
 - Transacciones, idempotencia y repositorios SQL del primer flujo jugable, con pruebas de persistencia reales. Ver [la entrega para integración](docs/architecture/flujo-jugable-persistencia.md).
-- Los módulos funcionales de registro, autenticación, juego y privacidad todavía están pendientes.
+- Registro HTTP integrado: documentos vigentes, inicio, reenvío y confirmación, con repositorios, seguridad y límites de solicitudes (PR #20–#22).
+- Herramientas para preparar claves, comprobar el entorno y ejecutar el trabajador de correo y depuración. Ver [operación del registro](docs/development/operacion-registro.md).
+- Inicio de sesión, renovación, autorización privada, juego HTTP y procesos de privacidad todavía requieren implementación.
 
 La existencia del contrato y de las tablas no significa que sus endpoints, procesos de privacidad o controles de infraestructura estén implementados.
 
@@ -19,12 +21,13 @@ Requisitos: Node.js compatible con NestJS 12 y su CLI, npm y Git. La compatibili
 
 ```bash
 npm ci
-cp .env.example .env
+npm run registration:setup
 npm run db:check
+npm run registration:check
 npm run start:dev
 ```
 
-Completar `.env` con el login de aplicación y preparar PostgreSQL según la [guía de conexión](docs/development/postgresql.md) antes de ejecutar `db:check`. La aplicación inicial responde en `http://localhost:3000` después de comprobar la base. Los servidores definidos en el contrato son referencias para la implementación; no representan un despliegue real.
+Completar `.env` con el login de aplicación y preparar PostgreSQL según la [guía de conexión](docs/development/postgresql.md) antes de ejecutar `db:check`. Completar también SMTP y los datos reales de privacidad conforme a la guía de operación; ejecutar el trabajador en otra terminal. La API usa `http://localhost:3000` en el entorno local. Los servidores definidos en el contrato son referencias para la implementación; no representan un despliegue real.
 
 ## Comprobaciones
 
@@ -67,4 +70,4 @@ No versionar credenciales, archivos `.env`, tokens ni datos personales reales. L
 
 ## Siguiente entrega funcional
 
-Configurar y comprobar la conexión en el entorno del equipo y completar registro, verificación de correo, aceptaciones legales y autenticación de acuerdo con el contrato. Cada bloque debe incluir sus comprobaciones y dejar explícito qué está implementado.
+Comprobar registro y entrega de correo en el entorno del equipo; continuar con acceso/sesiones, integración de juego y privacidad según los contratos. Cada bloque debe incluir sus comprobaciones y dejar explícito qué está implementado.
