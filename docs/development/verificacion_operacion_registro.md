@@ -18,3 +18,9 @@ Se utilizó una base local recién instalada con la migración existente, un log
 Las pruebas unitarias añadidas comprueban conservación de secretos existentes, inicialización idempotente, rechazo de claves inválidas/reutilizadas y preparación concurrente; diagnóstico SMTP sin envío ni filtración del error; depuración confirmada antes del correo; procesamiento secuencial, recuperación tras fallo e interrupción de la espera.
 
 No se accedió a RDS ni a un SMTP externo durante esta entrega. No se enviaron mensajes reales. La recepción de correo, los documentos legales reales, la instalación permanente del trabajador y el despliegue requieren la comprobación del entorno del equipo descrita en [operación del registro](operacion-registro.md). Tampoco se acreditan aquí login, renovación, autorización privada o el resto de las retenciones.
+
+## Comprobación conjunta con disponibilidad
+
+Se combinaron localmente las ramas de las PR #23 y #24 sin conflictos, sin integrarlas en GitHub. Build, TypeScript y lint correctos; 624 unitarias, 13 HTTP ordinarias y 63 de persistencia correctas. La prueba HTTP activada con PostgreSQL temporal también pasó, incluidas la nueva consulta de disponibilidad y la cancelación/ciclo del trabajador.
+
+El equipo eligió Brevo, con la cuenta todavía pendiente de creación. La comprobación real SMTP y de recepción continúa pendiente; esta entrega no requiere compartir sus credenciales por chat.
