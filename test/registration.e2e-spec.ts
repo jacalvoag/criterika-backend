@@ -51,6 +51,9 @@ describe('RegistrationHttpController', () => {
     expect(result.headers['x-request-id']).toBeTruthy();
     expect(result.headers['idempotency-replayed']).toBe('false');
     expect(application.start.mock.calls[0][3]).not.toBe('203.0.113.77');
+    expect(application.start.mock.calls[0][4]).toBe(
+      result.headers['x-request-id'],
+    );
     expect(limiter.check.mock.calls[0][0]).toBe(
       application.start.mock.calls[0][3],
     );

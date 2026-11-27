@@ -83,10 +83,17 @@ describe('RegistrationApplication', () => {
   });
   it('normaliza la intención y genera el hash después de la huella y antes de la transacción', async () => {
     const { app, hash, fingerprint, execute, start } = setup();
-    const result = await app.start(body, key, now, '192.0.2.1');
+    const result = await app.start(body, key, now, '192.0.2.1', registrationId);
     expect(result.status).toBe(202);
     expect(fingerprint).toHaveBeenCalledBefore(hash);
     expect(hash).toHaveBeenCalledBefore(execute);
+    expect(execute).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.anything(),
+      expect.any(Function),
+      undefined,
+      registrationId,
+    );
     expect(fingerprint).toHaveBeenCalledWith(
       expect.anything(),
       expect.objectContaining({

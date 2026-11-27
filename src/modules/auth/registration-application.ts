@@ -38,6 +38,8 @@ interface RegistrationDependencies {
       intention: Intention,
       fingerprint: Buffer,
       work: (tx: PoolClient, clock: () => Date) => Promise<OperationResponse>,
+      clock?: () => Date,
+      requestId?: string,
     ): Promise<UnitOfWorkResult>;
   };
 }
@@ -134,6 +136,7 @@ export class RegistrationApplication {
     key: unknown,
     acceptedAt: Date,
     trustedIp: string,
+    requestId?: string,
   ) {
     const parsedKey = parseRegistrationIdempotencyKey(key);
     if (!parsedKey.ok) return { ...reject(parsedKey.reason), replayed: false };
@@ -174,11 +177,13 @@ export class RegistrationApplication {
             clock(),
           ),
         ),
+      undefined,
+      requestId,
     );
     return recover(result);
   }
 
-  async resend(registrationId: unknown, key: unknown) {
+  async resend(registrationId: unknown, key: unknown, requestId?: string) {
     const parsedKey = parseRegistrationIdempotencyKey(key);
     if (!parsedKey.ok) return { ...reject(parsedKey.reason), replayed: false };
     const id = parseRegistrationId(registrationId);
@@ -199,11 +204,18 @@ export class RegistrationApplication {
           convertResult(
             await this.dependencies.commands.resend(tx, id.value, clock),
           ),
+        undefined,
+        requestId,
       ),
     );
   }
 
-  async verify(registrationId: unknown, key: unknown, body: unknown) {
+  async verify(
+    registrationId: unknown,
+    key: unknown,
+    body: unknown,
+    requestId?: string,
+  ) {
     const parsedKey = parseRegistrationIdempotencyKey(key);
     if (!parsedKey.ok) return { ...reject(parsedKey.reason), replayed: false };
     const id = parseRegistrationId(registrationId);
@@ -244,6 +256,8 @@ export class RegistrationApplication {
             },
           };
         },
+        undefined,
+        requestId,
       ),
     );
   }

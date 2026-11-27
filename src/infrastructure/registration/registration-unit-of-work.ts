@@ -31,9 +31,10 @@ export class RegistrationUnitOfWork {
       clock: () => Date,
     ) => Promise<RegistrationHttpResult>,
     clock: () => Date = () => new Date(),
+    requestId: string = randomUUID(),
   ) {
     return this.runner.run(
-      { tipo: 'SISTEMA', requestId: randomUUID() },
+      { tipo: 'SISTEMA', requestId },
       async (tx) => {
         const claim = await this.idempotency.claim(
           tx,
