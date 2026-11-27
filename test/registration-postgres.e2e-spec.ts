@@ -5,6 +5,7 @@ import { Test } from '@nestjs/testing';
 import request from 'supertest';
 import { AppModule } from '../src/app.module.js';
 import { RegistrationMailWorker } from '../src/infrastructure/registration/registration-mail-worker.js';
+import { RegistrationOperationsService } from '../src/infrastructure/registration/registration-operations.service.js';
 import { RegistrationUnitOfWork } from '../src/infrastructure/registration/registration-unit-of-work.js';
 
 const integrationEnabled = process.env['REGISTRATION_HTTP_TEST'] === '1';
@@ -82,6 +83,14 @@ describe.skipIf(!integrationEnabled)(
       expect(Number(resend.headers['retry-after'])).toBeGreaterThan(0);
 
       const worker = app.get(RegistrationMailWorker);
+      const stop = new AbortController();
+      stop.abort();
+      expect(await worker.drain(20, () => new Date(), stop.signal)).toEqual({
+        sent: 0,
+        failed: 0,
+        skipped: 0,
+      });
+      expect(send).not.toHaveBeenCalled();
       expect(await worker.drain()).toMatchObject({ sent: 1, failed: 0 });
       const message = send.mock.calls[0][0].text as string;
       const code = /código de verificación es (\d{6})/.exec(message)?.[1];
@@ -138,6 +147,14 @@ describe.skipIf(!integrationEnabled)(
         .expect(201);
       expect(replay.body).toEqual(successful.body);
       expect(replay.headers['idempotency-replayed']).toBe('true');
+      expect(await app.get(RegistrationOperationsService).cycle(1)).toEqual({
+        status: 'ok',
+        sent: 0,
+        failed: 0,
+        skipped: 0,
+        responsesPruned: 0,
+      });
+      expect(send).toHaveBeenCalledOnce();
     });
   },
 );
