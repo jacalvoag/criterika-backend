@@ -12,7 +12,8 @@ import { RegistrationHttpController } from './registration-http.controller.js';
 export class RegistrationHttpModule {
   /**
    * The provided provider must expose REGISTRATION_RATE_LIMITER. This explicit
-   * dependency prevents enabling public routes without a shared limiter.
+   * dependency prevents enabling public routes without a configured limiter.
+   * The limiter must match the deployment topology.
    */
   static register(limiter: Provider): DynamicModule {
     return {

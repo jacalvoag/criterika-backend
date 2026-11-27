@@ -2,8 +2,9 @@
 
 La prueba `registration-postgres.e2e-spec.ts` comprueba las cuatro rutas
 contra los repositorios reales. Para capturar el código, sustituye solamente el
-transporte de correo por un proveedor de prueba. El limitador también es un
-doble de prueba. La prueba no verifica un despliegue SMTP ni un limitador real.
+transporte de correo por un proveedor de prueba. Utiliza el limitador de la
+aplicación y comprueba un despliegue de una sola instancia. La prueba no
+verifica un proveedor SMTP remoto.
 
 Preparar una base PostgreSQL **nueva y desechable** llamada
 `criterika_prueba_*`, aplicar la migración y crear un login de aplicación
