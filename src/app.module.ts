@@ -1,3 +1,4 @@
+import { HealthModule } from './modules/system/health.module.js';
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
@@ -9,6 +10,7 @@ import { RegistrationRateLimiterService } from './modules/auth/registration-rate
 @Module({
   imports: [
     PostgresModule,
+    HealthModule,
     RegistrationHttpModule.register({
       provide: REGISTRATION_RATE_LIMITER,
       useClass: RegistrationRateLimiterService,
