@@ -45,4 +45,13 @@ describe('RegistrationRateLimiterService', () => {
       retryAfterSeconds: 60,
     });
   });
+
+  it('no deja que una dirección ya limitada agote el límite general', async () => {
+    for (let attempt = 0; attempt < 600; attempt += 1) {
+      await limiter.check('192.0.2.1', 'start');
+    }
+    await expect(limiter.check('192.0.2.2', 'start')).resolves.toEqual({
+      allowed: true,
+    });
+  });
 });
