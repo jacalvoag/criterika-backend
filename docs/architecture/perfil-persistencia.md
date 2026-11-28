@@ -21,6 +21,8 @@ El repositorio rechaza cuerpos vacíos, arrays, valores nulos, propiedades desco
 
 **El snapshot es interno y no es todavía el DTO `UserProfile`.** Uzzi debe obtener sanciones/restricciones y aplicar las reglas de estado y edad de accounts para completar `estado`, `suspensionHasta` y, cuando corresponda, `restricciones`. `HABILITADA` no implica automáticamente `ACTIVA`: una cuenta habilitada puede tener sanciones o restricciones. La situación de cancelación se conserva para que el coordinador aplique la política correspondiente.
 
+La consulta de esos hechos ya está disponible mediante `PostgresPlayerAccountStateRepository`: ver [estado mínimo del jugador](estado-cuenta-persistencia.md). Leer ambos repositorios con el mismo cliente y snapshot; la proyección funcional sigue perteneciendo a accounts.
+
 Para completar las rutas `/me`:
 
 1. Registrar/inyectar el repositorio en el módulo de accounts y autenticar como `JUGADOR` según `AUTHENTICATED_OWNER`.

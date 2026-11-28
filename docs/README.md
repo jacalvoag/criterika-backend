@@ -39,3 +39,5 @@ Los archivos terminados en `v1` conservan su nombre; la revisión puntual del co
 - [Consultas del diccionario adquirido](architecture/diccionario-persistencia.md): listado, búsqueda, detalle y paginación por jugador; firmas y dependencias para integración.
 
 - [Persistencia del perfil propio](architecture/perfil-persistencia.md): consulta y edición de nombre/apellidos, concurrencia y política de auditoría; integración funcional de `/me` para accounts.
+
+- [Estado mínimo del jugador](architecture/estado-cuenta-persistencia.md): sanciones y finalidades restringidas vigentes para la proyección de perfil y las políticas de acceso de accounts.
