@@ -35,3 +35,5 @@ Los archivos terminados en `v1` conservan su nombre; la revisión puntual del co
 - [Persistencia e infraestructura del registro](architecture/registro-persistencia.md).
 
 - [Operación del registro](development/operacion-registro.md): preparación de claves, comprobación de dependencias y trabajador de correo/depuración.
+
+- [Consultas del diccionario adquirido](architecture/diccionario-persistencia.md): listado, búsqueda, detalle y paginación por jugador; firmas y dependencias para integración.
