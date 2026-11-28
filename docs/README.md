@@ -45,3 +45,5 @@ Los archivos terminados en `v1` conservan su nombre; la revisión puntual del co
 - [Persistencia de contraseñas](architecture/contrasenas-persistencia.md): recuperación de un uso, cambio autenticado y revocación transaccional de sesiones/enlaces; integración para auth/accounts.
 
 - [Documentos y aceptaciones posteriores](architecture/aceptaciones-legales-persistencia.md): consulta de versiones publicadas, historial propio y nueva evidencia explícita sin sobrescribir aceptaciones anteriores.
+
+- [Administración y publicación legal](architecture/publicacion-legal-persistencia.md): repositorios separados de lectura, borradores y publicación; control de versión, vigencia y auditoría atómica.

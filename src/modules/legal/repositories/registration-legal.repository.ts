@@ -2,20 +2,16 @@ import type { PoolClient } from 'pg';
 import type { LegalRegistrationRepository } from '../registration-legal.service.js';
 import type { PublishedRegistrationDocument } from '../current-registration-documents.js';
 
-export interface RegistrationPrivacyConfiguration {
-  responsibleName: string;
-  contactEmail: string;
-  postalAddress: string;
-}
+import {
+  isPrivacyConfigured,
+  type RegistrationPrivacyConfiguration,
+} from './legal-privacy.configuration.js';
+export type { RegistrationPrivacyConfiguration } from './legal-privacy.configuration.js';
 
 export class PostgresLegalRegistrationRepository implements LegalRegistrationRepository {
   constructor(private readonly privacy: RegistrationPrivacyConfiguration) {}
   private configured(): boolean {
-    return (
-      Object.values(this.privacy).every(
-        (v) => typeof v === 'string' && v.trim().length > 0,
-      ) && /^[^\s@]+@[^\s@]+$/.test(this.privacy.contactEmail)
-    );
+    return isPrivacyConfigured(this.privacy);
   }
   async getCurrentForShare(tx: PoolClient) {
     if (!this.configured()) return null;

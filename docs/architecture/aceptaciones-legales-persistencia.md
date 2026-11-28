@@ -1,6 +1,8 @@
 # Documentos publicados y aceptaciones posteriores al registro
 
-Entrega de José sobre `develop` después de la PR #30. Cubre persistencia para consultar documentos publicados por versión, listar evidencias propias y registrar una nueva aceptación explícita. No agrega rutas HTTP ni administración/publicación de borradores; esas operaciones siguen en un bloque posterior. Reutiliza la migración 0001 sin modificaciones.
+Entrega de José sobre `develop` después de la PR #30. Cubre persistencia para consultar documentos publicados por versión, listar evidencias propias y registrar una nueva aceptación explícita. No agrega rutas HTTP; la administración/publicación de borradores se entrega en el bloque separado enlazado abajo. Reutiliza la migración 0001 sin modificaciones.
+
+Actualización posterior: la persistencia de ese bloque administrativo ya está disponible en [administración y publicación legal](publicacion-legal-persistencia.md). La integración de sus rutas y permisos sigue pendiente.
 
 ## Capacidades para Uzzi
 
@@ -28,7 +30,7 @@ El permiso de sesión, incluido el acceso con aceptación pendiente, pertenece a
 
 ## Publicación y atomicidad
 
-La comprobación vigente usa el bloqueo compartido de transacción `criterika:legal:current:v1` que ya utiliza el registro. El futuro publicador debe tomar su compañero exclusivo mediante `pg_advisory_xact_lock(hashtextextended('criterika:legal:current:v1',0))` antes de cambiar la selección, respetar el orden de filas legales y no adquirir cuentas de jugadores después de ese bloqueo. Las pruebas simulan ese protocolo con un operador en una base desechable; no acreditan que ya exista la API administrativa de publicación.
+La comprobación vigente usa el bloqueo compartido de transacción `criterika:legal:current:v1` que ya utiliza el registro. El publicador administrativo toma su compañero exclusivo mediante `pg_advisory_xact_lock(hashtextextended('criterika:legal:current:v1',0))` antes de cambiar la selección, respetar el orden de filas legales y no adquirir cuentas de jugadores después de ese bloqueo. Las pruebas de esta entrega simulan ese protocolo con un operador en una base desechable. La API administrativa de publicación sigue pendiente de integración.
 
 Una publicación confirmada antes de obtener el bloqueo obliga a volver a validar los IDs presentados y rechazar versiones obsoletas. Si se aceptan primero los documentos, el bloqueo compartido los conserva vigentes hasta confirmar la evidencia. La IP y el instante originales quedan asociados a esas revisiones, que siguen consultables al cambiar la vigencia.
 
