@@ -44,7 +44,17 @@ export function receiptEconomy(
   project: ReceiptEconomyProjector,
   facts: PurchaseFacts,
 ): JsonObject {
-  const value = JSON.parse(jsonObject(project(facts))) as JsonObject;
+  const isolated: PurchaseFacts = {
+    state: {
+      ...facts.state,
+      proximaRegeneracionEn: facts.state.proximaRegeneracionEn
+        ? new Date(facts.state.proximaRegeneracionEn.getTime())
+        : null,
+    },
+    reserved: facts.reserved,
+    at: new Date(facts.at.getTime()),
+  };
+  const value = JSON.parse(jsonObject(project(isolated))) as JsonObject;
   const lives = calculateLives(
     {
       totales: facts.state.vidasTotales,

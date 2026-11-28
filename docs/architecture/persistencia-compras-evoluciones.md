@@ -24,4 +24,6 @@ La suite `database/tests/lote-compras-evoluciones.integration.ts` reutiliza el a
 
 Los pequeños auxiliares comunes son idénticos entre las ramas independientes del lote; al integrarlas existe una sola copia de cada archivo compartido. No se modifican precios, migraciones, el esquema real de RDS ni archivos funcionales de otros integrantes.
 
-Verificación independiente: 12 casos SQL de este bloque correctos con PostgreSQL 18.6 efímero y login limitado. La unión del lote pasó 362 casos de persistencia, 624 unitarias, 13 HTTP ordinarias y una HTTP de registro con PostgreSQL, además de compilación, tipos y lint. No se accedió a RDS ni a correo externo.
+Verificación independiente: 13 casos SQL de este bloque correctos con PostgreSQL 18.6 efímero y login limitado. La unión del lote pasó 364 casos de persistencia, 624 unitarias, 13 HTTP ordinarias y una HTTP de registro con PostgreSQL, además de compilación, tipos y lint. No se accedió a RDS ni a correo externo.
+
+El proyector recibe una copia del estado y de sus fechas: una mutación accidental de sus argumentos no puede cambiar la compra. La proyección se compara con los hechos originales; la regresión comprueba rollback completo ante una respuesta falseada por esa mutación.

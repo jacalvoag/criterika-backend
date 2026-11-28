@@ -167,3 +167,15 @@ it('no cobra una etapa cuya imagen dejó de estar activa', async () => {
   });
   expect(await state()).toEqual(before);
 });
+
+it('un proyector que muta sus datos no puede alterar la compra ni falsear el recibo', async () => {
+  const bad = new PostgresEvolutionPurchaseRepository((facts) => {
+      facts.state.vidasTotales = 0;
+      return testEconomy(facts);
+    }),
+    before = await state();
+  await expect(
+    own((tx) => bad.purchaseOwned(tx, player, randomUUID(), card, 1)),
+  ).rejects.toBeInstanceOf(PersistenceInvariantError);
+  expect(await state()).toEqual(before);
+});
