@@ -170,3 +170,15 @@ it('rechaza contexto técnico y otro titular', async () => {
     own((tx) => repo.purchaseOwned(tx, other, randomUUID(), 'VIDA_1')),
   ).rejects.toBeInstanceOf(PersistenceInvariantError);
 });
+
+it('un proyector que muta sus datos no puede alterar la compra ni falsear el recibo', async () => {
+  const bad = new PostgresLifePurchaseRepository((facts) => {
+      facts.state.vidasTotales = 5;
+      return testEconomy(facts);
+    }),
+    before = await state();
+  await expect(
+    own((tx) => bad.purchaseOwned(tx, player, randomUUID(), 'VIDA_1')),
+  ).rejects.toBeInstanceOf(PersistenceInvariantError);
+  expect(await state()).toEqual(before);
+});
