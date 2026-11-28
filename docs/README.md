@@ -43,3 +43,5 @@ Los archivos terminados en `v1` conservan su nombre; la revisión puntual del co
 - [Estado mínimo del jugador](architecture/estado-cuenta-persistencia.md): sanciones y finalidades restringidas vigentes para la proyección de perfil y las políticas de acceso de accounts.
 
 - [Persistencia de contraseñas](architecture/contrasenas-persistencia.md): recuperación de un uso, cambio autenticado y revocación transaccional de sesiones/enlaces; integración para auth/accounts.
+
+- [Documentos y aceptaciones posteriores](architecture/aceptaciones-legales-persistencia.md): consulta de versiones publicadas, historial propio y nueva evidencia explícita sin sobrescribir aceptaciones anteriores.
