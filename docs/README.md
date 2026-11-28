@@ -41,3 +41,5 @@ Los archivos terminados en `v1` conservan su nombre; la revisión puntual del co
 - [Persistencia del perfil propio](architecture/perfil-persistencia.md): consulta y edición de nombre/apellidos, concurrencia y política de auditoría; integración funcional de `/me` para accounts.
 
 - [Estado mínimo del jugador](architecture/estado-cuenta-persistencia.md): sanciones y finalidades restringidas vigentes para la proyección de perfil y las políticas de acceso de accounts.
+
+- [Persistencia de contraseñas](architecture/contrasenas-persistencia.md): recuperación de un uso, cambio autenticado y revocación transaccional de sesiones/enlaces; integración para auth/accounts.
