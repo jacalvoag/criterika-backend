@@ -208,7 +208,8 @@ export class PostgresPasswordRepository {
     await tx.query(
       `UPDATE criterika.desafios_verificacion
       SET usado_en=COALESCE(usado_en,$2),mensaje_envio_cifrado=NULL
-      WHERE cuenta_id=$1 AND finalidad='RECUPERACION'`,
+      WHERE cuenta_id=$1 AND (finalidad='RECUPERACION' OR (finalidad='LOGIN_ADMIN'
+      AND EXISTS(SELECT 1 FROM criterika.cuentas WHERE id=$1 AND rol='ADMINISTRADOR')))`,
       [accountId, at],
     );
   }
